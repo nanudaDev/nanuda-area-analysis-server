@@ -1,5 +1,12 @@
 import { BaseEntity } from 'src/core';
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { CodeBdong } from '../code-bdong/code-bdong.entity';
 
 @Entity({ name: 'code_hdong' })
 export class CodeHdong extends BaseEntity<CodeHdong> {
@@ -28,4 +35,21 @@ export class CodeHdong extends BaseEntity<CodeHdong> {
     type: 'varchar',
   })
   hdongName: string;
+
+  @ManyToMany(
+    type => CodeBdong,
+    bCode => bCode.hCodes,
+  )
+  @JoinTable({
+    name: 'code_hdong_bdong',
+    joinColumn: {
+      name: 'hdongCode',
+      referencedColumnName: 'hdongCode',
+    },
+    inverseJoinColumn: {
+      name: 'bdongCode',
+      referencedColumnName: 'bdongCode',
+    },
+  })
+  bCodes?: CodeBdong[];
 }
