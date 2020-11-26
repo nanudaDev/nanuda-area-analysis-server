@@ -1,8 +1,8 @@
 {
-  "name": "nanuda-platform-api",
+  "name": "nanuda-area-analysis-server",
   "version": "0.0.1",
   "description": "",
-  "author": "",
+  "author": "이상준 - 나누다키친",
   "private": true,
   "license": "UNLICENSED",
   "scripts": {

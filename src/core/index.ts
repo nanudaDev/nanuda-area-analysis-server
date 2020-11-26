@@ -1,5 +1,6 @@
 export * from './typeorm';
 export * from './base.entity';
+export * from './base-created.entity';
 export * from './base.controller';
 export * from './base.dto';
 export * from './interceptors';
