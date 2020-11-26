@@ -29,7 +29,7 @@ export class CodeHdongService extends BaseService {
       )
       .AndWhereLike(
         'codeHdong',
-        'bdongName',
+        'hdongName',
         codeHdongListDto.hdongName,
         codeHdongListDto.exclude('hdongName'),
       )
