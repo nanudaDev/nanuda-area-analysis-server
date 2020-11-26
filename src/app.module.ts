@@ -6,7 +6,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { TypeOrmConfigService } from './config';
 import { LoggingInterceptor } from './core';
-import { CodeBdongModule, CodeHdongModule } from './modules';
+import {
+  CodeBdongModule,
+  CodeHdongModule,
+  KbCategoryInfoModule,
+} from './modules';
 
 @Module({
   imports: [
@@ -30,6 +34,7 @@ import { CodeBdongModule, CodeHdongModule } from './modules';
     }),
     CodeBdongModule,
     CodeHdongModule,
+    KbCategoryInfoModule,
   ],
   controllers: [AppController],
   providers: [{ provide: APP_INTERCEPTOR, useClass: LoggingInterceptor }],
