@@ -1,5 +1,6 @@
 import { BaseEntity } from 'src/core';
-import { Column, Entity, PrimaryColumn } from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryColumn } from 'typeorm';
+import { FoodCategoryMapper } from '../food-category-mapper/food-category-mapper.entity';
 
 @Entity({ name: 'kb_category_info' })
 export class KbCategoryInfo extends BaseEntity<KbCategoryInfo> {
@@ -8,6 +9,14 @@ export class KbCategoryInfo extends BaseEntity<KbCategoryInfo> {
     name: 's_small_category_cd',
   })
   sSmallCategoryCd: string;
+
+  @Column({
+    type: 'int',
+    unique: true,
+    unsigned: true,
+    nullable: false,
+  })
+  id: number;
 
   @Column({
     type: 'varchar',
@@ -56,4 +65,10 @@ export class KbCategoryInfo extends BaseEntity<KbCategoryInfo> {
     name: 'TIME_STAMP',
   })
   created: Date;
+
+  @OneToMany(
+    type => FoodCategoryMapper,
+    foodCategoryMapper => foodCategoryMapper.kbCategory,
+  )
+  foodCategories?: FoodCategoryMapper[];
 }

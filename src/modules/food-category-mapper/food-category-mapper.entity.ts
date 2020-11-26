@@ -9,6 +9,8 @@ import {
 } from 'typeorm';
 import { BaeminCategory } from '../baemin-category/baemin-category.entity';
 import { CommericialBizCatCode } from '../commercial-business-category-code/commercial-biz-code.entity';
+import { KbCategoryInfo } from '../kb-category-info/kb-category-info.entity';
+import { KrLicenseCode } from '../kr-license-code/kr-license-code.entity';
 
 require('dotenv').config();
 
@@ -61,4 +63,18 @@ export class FoodCategoryMapper extends BaseCreatedEntity<FoodCategoryMapper> {
   )
   @JoinColumn({ name: 'commercialCategoryId' })
   commercialCode?: CommericialBizCatCode;
+
+  @ManyToOne(
+    type => KbCategoryInfo,
+    kbCategory => kbCategory.foodCategories,
+  )
+  @JoinColumn({ name: 'kbCategoryId', referencedColumnName: 'id' })
+  kbCategory?: KbCategoryInfo;
+
+  @ManyToOne(
+    type => KrLicenseCode,
+    license => license.foodCategories,
+  )
+  @JoinColumn({ name: 'licenseCategoryId' })
+  license?: KrLicenseCode;
 }

@@ -7,6 +7,7 @@ import { AppController } from './app.controller';
 import { TypeOrmConfigService } from './config';
 import { LoggingInterceptor } from './core';
 import {
+  BaeminCategoryModule,
   CodeBdongModule,
   CodeHdongModule,
   KbCategoryInfoModule,
@@ -32,6 +33,7 @@ import {
       entities: [],
       synchronize: false,
     }),
+    BaeminCategoryModule,
     CodeBdongModule,
     CodeHdongModule,
     KbCategoryInfoModule,

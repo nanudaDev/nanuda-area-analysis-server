@@ -1,5 +1,6 @@
 import { BaseCreatedEntity } from 'src/core';
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { FoodCategoryMapper } from '../food-category-mapper/food-category-mapper.entity';
 
 @Entity({ name: 'kr_license_code' })
 export class KrLicenseCode extends BaseCreatedEntity<KrLicenseCode> {
@@ -25,4 +26,10 @@ export class KrLicenseCode extends BaseCreatedEntity<KrLicenseCode> {
     type: 'varchar',
   })
   baeminCategoryName?: string;
+
+  @OneToMany(
+    type => FoodCategoryMapper,
+    foodCategoryMapper => foodCategoryMapper.license,
+  )
+  foodCategories?: FoodCategoryMapper[];
 }
