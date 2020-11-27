@@ -36,6 +36,9 @@ export class CommericialBizCatCode extends BaseCreatedEntity<
   })
   smallName: string;
 
+  @Column({ type: 'varchar' })
+  baeminCategoryCode?: string;
+
   @OneToMany(
     type => FoodCategoryMapper,
     foodCategoryMapper => foodCategoryMapper.commercialCode,
