@@ -145,7 +145,7 @@ export class KrLicenseCodeService extends BaseService {
         {
           fields: [
             {
-              value: `[인혀가 업데이트] 현재 ${count} 데이터가 업데이트 되었습니다. 남은 데이터 수: ${remaining}`,
+              value: `[인허가 업데이트] 현재 ${count} 데이터가 업데이트 되었습니다. 남은 데이터 수: ${remaining}`,
               short: false,
             },
           ],
