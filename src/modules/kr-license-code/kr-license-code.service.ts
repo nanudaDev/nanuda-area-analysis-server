@@ -13,6 +13,8 @@ import { KrLicenseCodeListDto } from './dto';
 import { KrLicenseCode } from './kr-license-code.entity';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import * as Slack from 'slack-node';
+import { Request } from 'express';
+import * as aligoapi from 'aligoapi';
 
 @Injectable()
 export class KrLicenseCodeService extends BaseService {
@@ -112,6 +114,45 @@ export class KrLicenseCodeService extends BaseService {
     entity.bdongCode = latLon.data.documents[0].code;
     entity = entity.set(entity);
     return await this.krLicenseRepo.save(entity);
+  }
+
+  /**
+   * get updated count
+   */
+  async countUpdatedRows() {
+    const qb = await this.krLicenseRepo
+      .createQueryBuilder('license')
+      .where('license.hdongCode IS NOT NULL')
+      .andWhere('license.bdongCode IS NOT NULL')
+      .andWhere('license.addressJibun like :keyword', { keyword: '서울%' })
+      .andWhere('license.unchecked = :unchecked', { unchecked: YN.NO })
+      .getCount();
+
+    await this.sendCountSlack(qb);
+    return qb;
+  }
+
+  async sendCountSlack(count: number) {
+    const qb = await this.krLicenseRepo
+      .createQueryBuilder('license')
+      .where('license.addressJibun like :keyword', { keyword: '서울%' })
+      .getCount();
+    const remaining = qb - count;
+    const message = {
+      text: `배달형 상담신청 안내`,
+      username: '인허가 데이터 업데이트 현황',
+      attachments: [
+        {
+          fields: [
+            {
+              value: `[인혀가 업데이트] 현재 ${count} 데이터가 업데이트 되었습니다. 남은 데이터 수: ${remaining}`,
+              short: false,
+            },
+          ],
+        },
+      ],
+    };
+    this.__send_slack(message);
   }
 
   private __send_slack(message: object) {

@@ -1,5 +1,7 @@
-import { Controller, Get, Patch, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Patch, Query, Req, UseGuards } from '@nestjs/common';
+import { Cron, CronExpression } from '@nestjs/schedule';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { Request } from 'express';
 import { PaginatedRequest, PaginatedResponse } from 'src/common';
 import { AuthRolesGuard, BaseController } from 'src/core';
 import { CONST_ADMIN_USER } from 'src/shared';
@@ -37,5 +39,11 @@ export class KrLicenseCodeController extends BaseController {
   @Patch('/test-batch')
   async testBatch() {
     return await this.krLicenseService.updateHBCode();
+  }
+
+  @Cron(CronExpression.EVERY_2_HOURS)
+  @Get('/kr-license-code-update-count')
+  async countUpdated(@Req() req: Request) {
+    return await this.krLicenseService.countUpdatedRows();
   }
 }
