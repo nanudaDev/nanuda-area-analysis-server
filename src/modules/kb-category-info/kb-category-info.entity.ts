@@ -60,6 +60,9 @@ export class KbCategoryInfo extends BaseEntity<KbCategoryInfo> {
   })
   largeCategoryNm: string;
 
+  @Column({ type: 'varchar' })
+  baeminCategoryCode?: string;
+
   @Column({
     type: 'datetime',
     name: 'TIME_STAMP',

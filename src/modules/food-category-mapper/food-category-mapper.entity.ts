@@ -70,11 +70,4 @@ export class FoodCategoryMapper extends BaseCreatedEntity<FoodCategoryMapper> {
   )
   @JoinColumn({ name: 'kbCategoryId', referencedColumnName: 'id' })
   kbCategory?: KbCategoryInfo;
-
-  @ManyToOne(
-    type => KrLicenseCode,
-    license => license.foodCategories,
-  )
-  @JoinColumn({ name: 'licenseCategoryId' })
-  license?: KrLicenseCode;
 }
