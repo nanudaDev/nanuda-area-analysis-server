@@ -11,6 +11,7 @@ import {
   CodeBdongModule,
   CodeHdongModule,
   KbCategoryInfoModule,
+  KrLicenseCodeModule,
 } from './modules';
 
 @Module({
@@ -37,6 +38,7 @@ import {
     CodeBdongModule,
     CodeHdongModule,
     KbCategoryInfoModule,
+    KrLicenseCodeModule,
   ],
   controllers: [AppController],
   providers: [{ provide: APP_INTERCEPTOR, useClass: LoggingInterceptor }],

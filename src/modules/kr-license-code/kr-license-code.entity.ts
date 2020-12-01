@@ -1,8 +1,16 @@
+import { YN } from 'src/common';
+import { ENVIRONMENT } from 'src/config';
 import { BaseCreatedEntity } from 'src/core';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { FoodCategoryMapper } from '../food-category-mapper/food-category-mapper.entity';
 
-@Entity({ name: 'kr_license_code' })
+require('dotenv').config();
+
+let tableName = 'kr_license_test';
+if (process.env.NODE_ENV === ENVIRONMENT.PRODUCTION) {
+  tableName = 'kr_license_code';
+}
+@Entity({ name: tableName })
 export class KrLicenseCode extends BaseCreatedEntity<KrLicenseCode> {
   @PrimaryGeneratedColumn({
     type: 'int',
@@ -10,11 +18,11 @@ export class KrLicenseCode extends BaseCreatedEntity<KrLicenseCode> {
   })
   id: number;
 
-  @Column({
-    type: 'varchar',
-    nullable: false,
-  })
-  storeCategoryCode: string;
+  //   @Column({
+  //     type: 'varchar',
+  //     nullable: false,
+  //   })
+  //   storeCategoryCode: string;
 
   @Column({
     type: 'varchar',
@@ -25,11 +33,35 @@ export class KrLicenseCode extends BaseCreatedEntity<KrLicenseCode> {
   @Column({
     type: 'varchar',
   })
-  baeminCategoryName?: string;
+  addressJibun?: string;
 
-  @OneToMany(
-    type => FoodCategoryMapper,
-    foodCategoryMapper => foodCategoryMapper.license,
-  )
-  foodCategories?: FoodCategoryMapper[];
+  @Column({
+    type: 'varchar',
+  })
+  hdongCode?: string;
+
+  @Column({
+    type: 'varchar',
+  })
+  bdongCode?: string;
+
+  //   @Column({
+  //     type: 'varchar',
+  //   })
+  //   baeminCategoryName?: string;
+
+  @Column({
+    type: 'varchar',
+  })
+  x?: string;
+
+  @Column({
+    type: 'varchar',
+  })
+  y?: string;
+
+  @Column({
+    type: 'char',
+  })
+  unchecked?: YN;
 }

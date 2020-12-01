@@ -24,6 +24,7 @@
     "@nestjs/common": "^6.10.14",
     "@nestjs/core": "^6.10.14",
     "@nestjs/platform-express": "^6.11.5",
+    "@nestjs/schedule": "^0.4.1",
     "@nestjs/swagger": "^4.2.6",
     "@types/passport": "^1.0.2",
     "@types/slack-node": "^0.1.3",
