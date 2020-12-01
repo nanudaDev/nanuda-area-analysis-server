@@ -139,8 +139,7 @@ export class KrLicenseCodeService extends BaseService {
       .getCount();
     const remaining = qb - count;
     const message = {
-      text: `배달형 상담신청 안내`,
-      username: '인허가 데이터 업데이트 현황',
+      text: `인허가 데이터 업데이트 현황`,
       attachments: [
         {
           fields: [
