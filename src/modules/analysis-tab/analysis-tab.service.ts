@@ -682,4 +682,94 @@ from (SELECT hdongCode, avg(A10) AS A10, avg(A20) AS A20, avg(A30) AS A30, avg(A
     allData.push(ageGroupData);
     return allData;
   }
+
+  /**
+   * 가구 수
+   * @param analysisTabListDto
+   */
+  async findResidentialRatio(analysisTabListDto: AnalysisTabListDto) {
+    const allData = [];
+    const totalCount = await this.wqEntityManager
+      .query(`select sum(genTotal) as totalCount
+      from kr_seoul_gen
+      where hdongCode in (select hdongCode 
+                          from code_hdong_bdong 
+                          where bdongCode = ${analysisTabListDto.bdongCode})
+      ;`);
+    allData.push(totalCount[0]);
+
+    const ratio = await this.wqEntityManager
+      .query(`select sum(gen1Cnt) as gen1Cnt,
+    sum(gen2Cnt) as gen2Cnt,
+    sum(gen3Cnt) as gen3Cnt,
+    sum(gen4Cnt) as gen4Cnt,
+    sum(gen5Cnt) as gen5Cnt,
+    sum(gen6Cnt + gen7Cnt) as gen6Cnt
+from kr_seoul_gen
+where hdongCode in (select hdongCode 
+                 from code_hdong_bdong 
+                 where bdongCode = ${analysisTabListDto.bdongCode})
+;`);
+    const backgroundColor = [];
+    const datas = [
+      parseInt(ratio[0].gen1Cnt),
+      parseInt(ratio[0].gen2Cnt),
+      parseInt(ratio[0].gen3Cnt),
+      parseInt(ratio[0].gen4Cnt),
+      parseInt(ratio[0].gen5Cnt),
+      parseInt(ratio[0].gen6Cnt),
+    ];
+    datas.map(data => {
+      if (data === Math.max(...datas)) {
+        backgroundColor.push('rgb(23, 162, 184)');
+      } else {
+        backgroundColor.push('rgb(232, 93, 71)');
+      }
+    });
+    const residentialData = {
+      datasets: [
+        {
+          data: datas,
+          backgroundColor: backgroundColor,
+        },
+      ],
+      labels: [
+        '1인 가구',
+        '2인 가구',
+        '3인 가구',
+        '4인 가구',
+        '5인 가구',
+        '6인 가구 이상',
+      ],
+    };
+    allData.push(residentialData);
+    return allData;
+  }
+
+  async findTotalEmployeeCount(analysisTabListDto: AnalysisTabListDto) {
+    const totalCount = await this.wqEntityManager
+      .query(`select sum(employeeCnt) as totalCount
+      from kr_nps t1
+      where t1.bdongCode = ${analysisTabListDto.bdongCode}
+      ;`);
+
+    return totalCount[0];
+  }
+
+  async findMovingPopulationCount(analysisTabListDto: AnalysisTabListDto) {
+    const totalCount = await this.wqEntityManager
+      .query(`select round(sum(totalCntAvg)) as totalCount
+      from (select hdongCode, avg(TotalCnt) as totalCntAvg
+              from kr_seoul_living_local
+              where hdongCode in (select hdongCode 
+                                  from code_hdong_bdong 
+                                  where bdongCode = ${analysisTabListDto.bdongCode}) 
+                                        and (time >= 7 and time <= 18)
+                                        and date BETWEEN DATE_ADD(NOW(), INTERVAL -6 MONTH ) AND NOW()
+              group by hdongCode) A
+      ;
+      `);
+
+    return totalCount[0];
+  }
 }

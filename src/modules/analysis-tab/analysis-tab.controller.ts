@@ -125,4 +125,32 @@ export class AnalysisTabController extends BaseController {
   async findAgeRatio(@Query() analysisTabListDto: AnalysisTabListDto) {
     return await this.analysisTabService.findAgeGroupRatio(analysisTabListDto);
   }
+
+  @Get('/analysis-tab/population/residential-ratio')
+  @ApiOperation({ description: '법정동 코드만 보낸다' })
+  async findResidentialRatio(@Query() analysisTabListDto: AnalysisTabListDto) {
+    return await this.analysisTabService.findResidentialRatio(
+      analysisTabListDto,
+    );
+  }
+
+  @Get('/analysis-tab/population/employee-count')
+  @ApiOperation({ description: '법정동 코드만 보낸다' })
+  async findTotalEmployeeCount(
+    @Query() analysisTabListDto: AnalysisTabListDto,
+  ) {
+    return await this.analysisTabService.findTotalEmployeeCount(
+      analysisTabListDto,
+    );
+  }
+
+  @Get('/analysis-tab/population/moving-population-count')
+  @ApiOperation({ description: '법정동 코드만 보낸다' })
+  async findMovingPopulationCount(
+    @Query() analysisTabListDto: AnalysisTabListDto,
+  ) {
+    return await this.analysisTabService.findMovingPopulationCount(
+      analysisTabListDto,
+    );
+  }
 }
