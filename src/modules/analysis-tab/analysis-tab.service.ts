@@ -342,10 +342,6 @@ limit 1
       const countData = {
         datasets: [
           {
-            barPercentage: 0.5,
-            barThickness: 6,
-            maxBarThickness: 8,
-            minBarLength: 2,
             data: datas,
             backgroundColor: backgroundColor,
           },
@@ -372,10 +368,6 @@ limit 1
       const revenueData = {
         datasets: [
           {
-            barPercentage: 0.5,
-            barThickness: 6,
-            maxBarThickness: 8,
-            minBarLength: 2,
             data: revDatas,
             backgroundColor: revBackgroundColor,
           },
@@ -462,10 +454,6 @@ from (select B.baeminCategoryName, B.s_small_category_nm, A.*
       const revenueData = {
         datasets: [
           {
-            barPercentage: 0.5,
-            barThickness: 6,
-            maxBarThickness: 8,
-            minBarLength: 2,
             data: revDatas,
             backgroundColor: revBackgroundColor,
           },
@@ -566,5 +554,132 @@ where T2.baeminCategoryName is not null;`);
     ;`);
 
     return survivalYears;
+  }
+
+  /**
+   * 주거 인구 수
+   * @param analysisTabListDto
+   */
+  async findResidentialPopulationCount(analysisTabListDto: AnalysisTabListDto) {
+    const resCount = await this.wqEntityManager
+      .query(`select round(sum(totalCntAvg)) as residentialPopulationCount
+      from (select hdongCode, avg(TotalCnt) as totalCntAvg
+              from kr_seoul_living_local
+              where hdongCode in (select hdongCode 
+                                  from code_hdong_bdong 
+                                  where bdongCode = ${analysisTabListDto.bdongCode}) 
+                                        and ((time >= 19 and time <= 23) or (time >= 0 and time <= 6))
+                                        and date BETWEEN DATE_ADD(NOW(), INTERVAL -6 MONTH ) AND NOW()
+              group by hdongCode) A
+      ;
+      `);
+
+    return {
+      residentialPopulationCount: resCount[0].residentialPopulationCount,
+    };
+  }
+
+  /**
+   * graph and numbers
+   * @param analysisTabListDto
+   */
+  async findGenderRatio(analysisTabListDto: AnalysisTabListDto) {
+    const allData = [];
+    const genderRatio = await this.wqEntityManager
+      .query(`select round(sum(B.male)) as male, 
+      round(sum(B.female)) as female
+from (SELECT hdongCode, avg(male) AS male, avg(female) AS female
+     FROM
+           (SELECT date, weekday, time, hdongCode,
+                   M10+M15+M20+M25+M30+M35+M40+M45+M50+M55+M60+M65+M70 AS male,
+                   F10+F15+F20+F25+F30+F35+F40+F45+F50+F55+F60+F65+F70 AS female
+            FROM kr_seoul_living_local 
+            WHERE hdongCode in (select hdongCode 
+                                from code_hdong_bdong 
+                                where bdongCode = ${analysisTabListDto.bdongCode})
+                                      AND ((time >= 19 and time <= 23) or (time >= 0 and time <= 6))
+                                      AND date BETWEEN DATE_ADD(NOW(), INTERVAL -6 MONTH ) AND NOW()) A
+     GROUP BY hdongCode) B;`);
+    allData.push({ 남성: genderRatio[0].male, 여성: genderRatio[0].female });
+
+    const datas = [
+      parseInt(genderRatio[0].male),
+      parseInt(genderRatio[0].female),
+    ];
+    const backgroundColor = [];
+    datas.map(data => {
+      if (data === Math.max(...datas)) {
+        backgroundColor.push('rgb(23, 162, 184)');
+      } else {
+        backgroundColor.push('rgb(232, 93, 71)');
+      }
+    });
+    const genderData = {
+      datasets: [
+        {
+          data: datas,
+          backgroundColor: backgroundColor,
+        },
+      ],
+      labels: ['남성', '여성'],
+    };
+    allData.push(genderData);
+    return allData;
+  }
+
+  async findAgeGroupRatio(analysisTabListDto: AnalysisTabListDto) {
+    const allData = [];
+    const ageGroupRatio = await this.wqEntityManager
+      .query(`select round(sum(B.A10)) as A10, 
+    round(sum(B.A20)) as A20, 
+    round(sum(B.A30)) as A30, 
+    round(sum(B.A40)) as A40, 
+    round(sum(B.A50)) as A50, 
+    round(sum(B.A60)) as A60
+from (SELECT hdongCode, avg(A10) AS A10, avg(A20) AS A20, avg(A30) AS A30, avg(A40) AS A40, avg(A50) AS A50, avg(A60) AS A60
+   FROM
+         (SELECT date, weekday, time, hdongCode,
+                    M10+M15+F10+F15 AS A10, 
+                    M20+M25+F20+F25 AS A20, 
+                    M30+M35+F30+F35 AS A30, 
+                    M40+M45+F40+F45 AS A40, 
+                    M50+M55+F50+F55 AS A50,
+                    M60+M65+M70+F60+F65+F70 AS A60
+             FROM kr_seoul_living_local 
+             WHERE hdongCode in (select hdongCode 
+                                 from code_hdong_bdong 
+                                 where bdongCode = ${analysisTabListDto.bdongCode})
+                   AND ((time >= 19 and time <= 23) or (time >= 0 and time <= 6))
+                   AND date BETWEEN DATE_ADD(NOW(), INTERVAL -6 MONTH ) AND NOW()) A
+     GROUP BY hdongCode) B
+;`);
+    allData.push(ageGroupRatio[0]);
+    const datas = [
+      parseInt(ageGroupRatio[0].A10),
+      parseInt(ageGroupRatio[0].A20),
+      parseInt(ageGroupRatio[0].A30),
+      parseInt(ageGroupRatio[0].A40),
+      parseInt(ageGroupRatio[0].A50),
+      parseInt(ageGroupRatio[0].A60),
+    ];
+    const backgroundColor = [];
+    datas.map(data => {
+      if (data === Math.max(...datas)) {
+        backgroundColor.push('rgb(23, 162, 184)');
+      } else {
+        backgroundColor.push('rgb(232, 93, 71)');
+      }
+    });
+    const ageGroupData = {
+      datasets: [
+        {
+          data: datas,
+          backgroundColor: backgroundColor,
+        },
+      ],
+      labels: ['10대', '20대', '30대', '40대', '50대', '60대 이상'],
+    };
+    allData.push(ageGroupData);
+    return allData;
   }
 }
