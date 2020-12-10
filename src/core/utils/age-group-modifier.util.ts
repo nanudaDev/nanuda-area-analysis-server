@@ -24,3 +24,21 @@ export const AgeGroupModifier = (value: string) => {
 
   return age;
 };
+
+export const RenameKeyObject = (
+  object: object,
+  key: string,
+  newKey: string,
+) => {
+  const clone = (obj: object) => Object.assign({}, obj);
+
+  const clonedObj = clone(object);
+
+  const targetKey = clonedObj[key];
+
+  delete clonedObj[key];
+
+  clonedObj[newKey] = targetKey;
+
+  return clonedObj;
+};

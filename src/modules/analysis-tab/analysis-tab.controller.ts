@@ -101,4 +101,56 @@ export class AnalysisTabController extends BaseController {
       analysisTabListDto,
     );
   }
+
+  /**
+   * 총 주거 인구수
+   * @param analysisTabListDto
+   */
+  @Get('/analysis-tab/population/resident-count')
+  @ApiOperation({ description: '법정동 코드만 보낸다' })
+  async findResCount(@Query() analysisTabListDto: AnalysisTabListDto) {
+    return await this.analysisTabService.findResidentialPopulationCount(
+      analysisTabListDto,
+    );
+  }
+
+  @Get('/analysis-tab/population/gender-ratio')
+  @ApiOperation({ description: '법정동 코드만 보낸다' })
+  async findGenderRatio(@Query() analysisTabListDto: AnalysisTabListDto) {
+    return await this.analysisTabService.findGenderRatio(analysisTabListDto);
+  }
+
+  @Get('/analysis-tab/population/age-group-ratio')
+  @ApiOperation({ description: '법정동 코드만 보낸다' })
+  async findAgeRatio(@Query() analysisTabListDto: AnalysisTabListDto) {
+    return await this.analysisTabService.findAgeGroupRatio(analysisTabListDto);
+  }
+
+  @Get('/analysis-tab/population/residential-ratio')
+  @ApiOperation({ description: '법정동 코드만 보낸다' })
+  async findResidentialRatio(@Query() analysisTabListDto: AnalysisTabListDto) {
+    return await this.analysisTabService.findResidentialRatio(
+      analysisTabListDto,
+    );
+  }
+
+  @Get('/analysis-tab/population/employee-count')
+  @ApiOperation({ description: '법정동 코드만 보낸다' })
+  async findTotalEmployeeCount(
+    @Query() analysisTabListDto: AnalysisTabListDto,
+  ) {
+    return await this.analysisTabService.findTotalEmployeeCount(
+      analysisTabListDto,
+    );
+  }
+
+  @Get('/analysis-tab/population/moving-population-count')
+  @ApiOperation({ description: '법정동 코드만 보낸다' })
+  async findMovingPopulationCount(
+    @Query() analysisTabListDto: AnalysisTabListDto,
+  ) {
+    return await this.analysisTabService.findMovingPopulationCount(
+      analysisTabListDto,
+    );
+  }
 }
