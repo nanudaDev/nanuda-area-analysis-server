@@ -52,6 +52,10 @@ export class AnalysisTabController extends BaseController {
     );
   }
 
+  /**
+   * 나이대 별
+   * @param analysisTabListDto
+   */
   @Get('/analysis-tab/revenue-analysis-age-group')
   @ApiOperation({ description: '법정동 코드랑 배민 카테고리 명 보낸다' })
   async revenueAnalysisAgeGroup(
@@ -62,6 +66,10 @@ export class AnalysisTabController extends BaseController {
     );
   }
 
+  /**
+   * 요일별
+   * @param analysisTabListDto
+   */
   @Get('/analysis-tab/revenue-analysis-by-day')
   @ApiOperation({ description: '법정동 코드랑 배민 카테고리 명 보낸다' })
   async revenueAnalysisByDay(@Query() analysisTabListDto: AnalysisTabListDto) {
@@ -70,6 +78,10 @@ export class AnalysisTabController extends BaseController {
     );
   }
 
+  /**
+   * 업종분석
+   * @param analysisTabListDto
+   */
   @Get('/analysis-tab/food-category-summary')
   @ApiOperation({ description: '법정동 코드만 보낸다' })
   async categoryAnalysisSummary(

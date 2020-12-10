@@ -258,12 +258,17 @@ from (select t1.baeminCategoryName,
     const genderLabel = ['남성', '여성', '알 수 없음'];
     // 주문 건수 위주
     const countData = {
-      dataSets: [
+      datasets: [
         {
           data: [
             genderRatio[0].m_cnt_per * 100,
             genderRatio[0].fm_cnt_per * 100,
             genderRatio[0].bz_cnt_per * 100,
+          ],
+          backgroundColor: [
+            'rgb(23,162,184)',
+            'rgb(232,93,71)',
+            'rgb(100,100,100)',
           ],
         },
       ],
@@ -272,12 +277,17 @@ from (select t1.baeminCategoryName,
     allData.push({ countData: countData });
     // 매출 건수 위주
     const revenueData = {
-      dataSets: [
+      datasets: [
         {
           data: [
             genderRatio[0].m_amt_per * 100,
             genderRatio[0].fm_amt_per * 100,
             genderRatio[0].bz_amt_per * 100,
+          ],
+          backgroundColor: [
+            'rgb(23,162,184)',
+            'rgb(232,93,71)',
+            'rgb(100,100,100)',
           ],
         },
       ],
