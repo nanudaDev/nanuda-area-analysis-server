@@ -7,6 +7,7 @@ import { AppController } from './app.controller';
 import { TypeOrmConfigService } from './config';
 import { LoggingInterceptor } from './core';
 import {
+  AnalysisTabModule,
   BaeminCategoryModule,
   CodeBdongModule,
   CodeHdongModule,
@@ -34,6 +35,7 @@ import {
       entities: [],
       synchronize: false,
     }),
+    AnalysisTabModule,
     BaeminCategoryModule,
     CodeBdongModule,
     CodeHdongModule,

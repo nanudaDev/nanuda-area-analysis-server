@@ -41,7 +41,7 @@ export class KrLicenseCodeController extends BaseController {
     return await this.krLicenseService.updateHBCode();
   }
 
-  @Cron(CronExpression.EVERY_2_HOURS)
+  //   @Cron(CronExpression.EVERY_2_HOURS)
   @Get('/kr-license-code-update-count')
   async countUpdated(@Req() req: Request) {
     return await this.krLicenseService.countUpdatedRows();

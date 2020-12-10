@@ -67,7 +67,7 @@ export class KrLicenseCodeService extends BaseService {
    * test
    */
 
-  @Cron('*/1 * * * * *')
+  //   @Cron('*/1 * * * * *')
   async updateHBCode() {
     const row = await this.findOneWithoutCode();
     if (row.length < 1) {
