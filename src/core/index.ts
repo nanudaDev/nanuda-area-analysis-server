@@ -6,3 +6,4 @@ export * from './base.dto';
 export * from './interceptors';
 export * from './base.service';
 export * from './guards';
+export * from './utils';
