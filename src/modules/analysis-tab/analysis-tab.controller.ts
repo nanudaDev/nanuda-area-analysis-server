@@ -14,6 +14,12 @@ export class AnalysisTabController extends BaseController {
     super();
   }
 
+  @Get('/analysis-tab/get-summary-check-index')
+  @ApiOperation({ description: '법정동 코드만 보낸다' })
+  async checkIndexForSummary(@Query() analysisTabListDto: AnalysisTabListDto) {
+    return await this.analysisTabService.checkIndex(analysisTabListDto);
+  }
+
   /**
    * 음식 매점 수
    * @param analysisTabListDto
