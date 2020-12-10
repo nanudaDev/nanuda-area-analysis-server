@@ -1,5 +1,5 @@
 import { Controller, Get, Query, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AuthRolesGuard, BaseController } from 'src/core';
 import { CONST_ADMIN_USER } from 'src/shared';
 import { AnalysisTabService } from './analysis-tab.service';
@@ -14,11 +14,18 @@ export class AnalysisTabController extends BaseController {
     super();
   }
 
+  @Get('/analysis-tab/get-summary-check-index')
+  @ApiOperation({ description: '법정동 코드만 보낸다' })
+  async checkIndexForSummary(@Query() analysisTabListDto: AnalysisTabListDto) {
+    return await this.analysisTabService.checkIndex(analysisTabListDto);
+  }
+
   /**
    * 음식 매점 수
    * @param analysisTabListDto
    */
   @Get('/analysis-tab/get-summary')
+  @ApiOperation({ description: '법정동 코드만 보낸다' })
   async analysisSummary(@Query() analysisTabListDto: AnalysisTabListDto) {
     return await this.analysisTabService.analysisSummary(analysisTabListDto);
   }
@@ -28,6 +35,7 @@ export class AnalysisTabController extends BaseController {
    * @param analysisTabListDto
    */
   @Get('/analysis-tab/category-ratio')
+  @ApiOperation({ description: '법정동 코드만 보낸다' })
   async categoryRatio(@Query() analysisTabListDto: AnalysisTabListDto) {
     return await this.analysisTabService.categoryRatio(analysisTabListDto);
   }
@@ -37,13 +45,19 @@ export class AnalysisTabController extends BaseController {
    * @param analysisTabListDto
    */
   @Get('/analysis-tab/revenue-analysis-gender')
+  @ApiOperation({ description: '법정동 코드랑 배민 카테고리 명 보낸다' })
   async revenueAnalysisGender(@Query() analysisTabListDto: AnalysisTabListDto) {
     return await this.analysisTabService.revenueAnalysisGender(
       analysisTabListDto,
     );
   }
 
+  /**
+   * 나이대 별
+   * @param analysisTabListDto
+   */
   @Get('/analysis-tab/revenue-analysis-age-group')
+  @ApiOperation({ description: '법정동 코드랑 배민 카테고리 명 보낸다' })
   async revenueAnalysisAgeGroup(
     @Query() analysisTabListDto: AnalysisTabListDto,
   ) {
@@ -52,14 +66,24 @@ export class AnalysisTabController extends BaseController {
     );
   }
 
+  /**
+   * 요일별
+   * @param analysisTabListDto
+   */
   @Get('/analysis-tab/revenue-analysis-by-day')
+  @ApiOperation({ description: '법정동 코드랑 배민 카테고리 명 보낸다' })
   async revenueAnalysisByDay(@Query() analysisTabListDto: AnalysisTabListDto) {
     return await this.analysisTabService.revenueAnalysisByDay(
       analysisTabListDto,
     );
   }
 
+  /**
+   * 업종분석
+   * @param analysisTabListDto
+   */
   @Get('/analysis-tab/food-category-summary')
+  @ApiOperation({ description: '법정동 코드만 보낸다' })
   async categoryAnalysisSummary(
     @Query() analysisTabListDto: AnalysisTabListDto,
   ) {
@@ -69,6 +93,7 @@ export class AnalysisTabController extends BaseController {
   }
 
   @Get('/analysis-tab/survival-years')
+  @ApiOperation({ description: '법정동 코드만 보낸다' })
   async categoryAnalysisSurvivalYears(
     @Query() analysisTabListDto: AnalysisTabListDto,
   ) {

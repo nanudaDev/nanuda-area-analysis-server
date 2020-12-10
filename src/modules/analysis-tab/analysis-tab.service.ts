@@ -3,6 +3,7 @@ import { InjectEntityManager } from '@nestjs/typeorm';
 import { BaseService } from 'src/core';
 import { AgeGroupModifier } from 'src/core/';
 import { EntityManager } from 'typeorm';
+import { AnalysisSummaryIndex } from './analysis-summary-index-test.entity';
 import { AnalysisTabListDto } from './dto';
 
 class AnalysisSummary {
@@ -24,14 +25,33 @@ export class AnalysisTabService extends BaseService {
   }
 
   /**
+   * check index
+   * @param analysisTabListDto
+   */
+  async checkIndex(analysisTabListDto: AnalysisTabListDto): Promise<boolean> {
+    const checkIndex = await this.wqEntityManager
+      .getRepository(AnalysisSummaryIndex)
+      .findOne({ where: { bdongCode: analysisTabListDto.bdongCode } });
+    if (checkIndex) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  /**
    * 상권 요약
    * @param analysisTabListDto
    */
   async analysisSummary(
     analysisTabListDto: AnalysisTabListDto,
   ): Promise<AnalysisSummary> {
-    const storeCount = await this.wqEntityManager
-      .query(`select count(*) as storeCount
+    const checkIndex = await this.wqEntityManager
+      .getRepository(AnalysisSummaryIndex)
+      .findOne({ where: { bdongCode: analysisTabListDto.bdongCode } });
+    if (!checkIndex) {
+      const storeCount = await this.wqEntityManager
+        .query(`select count(*) as storeCount
       from kr_stores_restaurant A
       join commercial_business_category_code B
       on A.smallCode = B.smallCode
@@ -39,18 +59,18 @@ export class AnalysisTabService extends BaseService {
           and B.baeminCategoryName is not null
           and A.bdongCode = ${analysisTabListDto.bdongCode}`);
 
-    //   총세대수
-    const houseCount = await this.wqEntityManager
-      .query(`select sum(genTotal) as houseCount
+      //   총세대수
+      const houseCount = await this.wqEntityManager
+        .query(`select sum(genTotal) as houseCount
     from kr_seoul_gen
     where hdongCode in (select hdongCode 
                         from code_hdong_bdong 
                         where bdongCode = ${analysisTabListDto.bdongCode})
     ;`);
 
-    // 주거 인구수
-    const resPopulationCount = await this.wqEntityManager
-      .query(`select round(sum(totalCntAvg)) as resPopulationCount
+      // 주거 인구수
+      const resPopulationCount = await this.wqEntityManager
+        .query(`select round(sum(totalCntAvg)) as resPopulationCount
       from (select hdongCode, avg(TotalCnt) as totalCntAvg
               from kr_seoul_living_local
               where hdongCode in (select hdongCode 
@@ -61,18 +81,18 @@ export class AnalysisTabService extends BaseService {
               group by hdongCode) A
       ;`);
 
-    // 직장인 수
-    const workerCount = await this.wqEntityManager
-      .query(`select sum(employeeCnt) as employeeCount
+      // 직장인 수
+      const workerCount = await this.wqEntityManager
+        .query(`select sum(employeeCnt) as employeeCount
       from kr_nps t1
       left join code_bdong t2
       on t1.bdongCode = t2.bdongCode
       where t1.bdongCode = ${analysisTabListDto.bdongCode}
       ;`);
 
-    // 유동인구
-    const movingPopulationCount = await this.wqEntityManager
-      .query(`select round(sum(totalCntAvg)) as movingPopulationCount
+      // 유동인구
+      const movingPopulationCount = await this.wqEntityManager
+        .query(`select round(sum(totalCntAvg)) as movingPopulationCount
       from (select hdongCode, avg(TotalCnt) as totalCntAvg
               from kr_seoul_living_local 
               where hdongCode in (select hdongCode 
@@ -83,9 +103,9 @@ export class AnalysisTabService extends BaseService {
               group by hdongCode) A
       ;`);
 
-    //   주요 연령대
-    const importantAgeGroup = await this.wqEntityManager
-      .query(`SELECT @var_max_val:= GREATEST(A10, A20, A30, A40, A50, A60) AS max_value,
+      //   주요 연령대
+      const importantAgeGroup = await this.wqEntityManager
+        .query(`SELECT @var_max_val:= GREATEST(A10, A20, A30, A40, A50, A60) AS max_value,
     CASE @var_max_val WHEN A10 THEN 'A10'
                       WHEN A20 THEN 'A20'
                       WHEN A30 THEN 'A30'
@@ -115,8 +135,8 @@ FROM
  ) c
 ;`);
 
-    const averageSurvivalYears = await this.wqEntityManager
-      .query(`select round(avg(survivalDays)/365, 2) as averageSurvivalYears
+      const averageSurvivalYears = await this.wqEntityManager
+        .query(`select round(avg(survivalDays)/365, 2) as averageSurvivalYears
 from kr_license_test A
 join kr_license_code B
 on A.storeCategory = B.storeCategory
@@ -126,28 +146,37 @@ where A.detailStateName = '폐업'
 ;
 `);
 
-    const result = await Promise.all([
-      storeCount[0],
-      houseCount[0],
-      resPopulationCount[0],
-      workerCount[0],
-      movingPopulationCount[0],
-      importantAgeGroup[0],
-      averageSurvivalYears[0],
-    ]);
+      const result = await Promise.all([
+        storeCount[0],
+        houseCount[0],
+        resPopulationCount[0],
+        workerCount[0],
+        movingPopulationCount[0],
+        importantAgeGroup[0],
+        averageSurvivalYears[0],
+      ]);
 
-    let summary = new AnalysisSummary();
-    summary.storeCount = result[0].storeCount;
-    summary.houseCount = result[1].houseCount;
-    summary.resPopulationCount = result[2].resPopulationCount;
-    summary.employeeCount = result[3].employeeCount;
-    summary.movingPopulationCount = result[4].movingPopulationCount;
-    summary.importantAgeGroup = AgeGroupModifier(
-      result[5].max_value_column_name,
-    );
-    summary.averageSurvivalYears = `${result[6].averageSurvivalYears}년`;
-
-    return summary;
+      let summary = new AnalysisSummary();
+      summary.storeCount = result[0].storeCount;
+      summary.houseCount = result[1].houseCount;
+      summary.resPopulationCount = result[2].resPopulationCount;
+      summary.employeeCount = result[3].employeeCount;
+      summary.movingPopulationCount = result[4].movingPopulationCount;
+      summary.importantAgeGroup = AgeGroupModifier(
+        result[5].max_value_column_name,
+      );
+      summary.averageSurvivalYears = `${result[6].averageSurvivalYears}년`;
+      // await save to analysis summary
+      let index = new AnalysisSummaryIndex();
+      index.bdongCode = analysisTabListDto.bdongCode;
+      index.result = summary;
+      index = await this.wqEntityManager
+        .getRepository(AnalysisSummaryIndex)
+        .save(index);
+      return summary;
+    } else {
+      return checkIndex.result;
+    }
   }
 
   /**
@@ -229,12 +258,17 @@ from (select t1.baeminCategoryName,
     const genderLabel = ['남성', '여성', '알 수 없음'];
     // 주문 건수 위주
     const countData = {
-      dataSets: [
+      datasets: [
         {
           data: [
             genderRatio[0].m_cnt_per * 100,
             genderRatio[0].fm_cnt_per * 100,
             genderRatio[0].bz_cnt_per * 100,
+          ],
+          backgroundColor: [
+            'rgb(23,162,184)',
+            'rgb(232,93,71)',
+            'rgb(100,100,100)',
           ],
         },
       ],
@@ -243,12 +277,17 @@ from (select t1.baeminCategoryName,
     allData.push({ countData: countData });
     // 매출 건수 위주
     const revenueData = {
-      dataSets: [
+      datasets: [
         {
           data: [
             genderRatio[0].m_amt_per * 100,
             genderRatio[0].fm_amt_per * 100,
             genderRatio[0].bz_amt_per * 100,
+          ],
+          backgroundColor: [
+            'rgb(23,162,184)',
+            'rgb(232,93,71)',
+            'rgb(100,100,100)',
           ],
         },
       ],
@@ -283,6 +322,23 @@ limit 1
 
     if (ageGroup && ageGroup.length > 0) {
       const allData = [];
+      const backgroundColor = [];
+      const datas = [
+        ageGroup[0].a10_cnt_per * 100,
+        ageGroup[0].a20_cnt_per * 100,
+        ageGroup[0].a30_cnt_per * 100,
+        ageGroup[0].a40_cnt_per * 100,
+        ageGroup[0].a50_cnt_per * 100,
+        ageGroup[0].a60_cnt_per * 100,
+      ];
+      datas.map(data => {
+        if (data === Math.max(...datas)) {
+          backgroundColor.push('rgb(23,162,184)');
+        } else {
+          backgroundColor.push('rgb(232,93,71)');
+        }
+      });
+
       const countData = {
         datasets: [
           {
@@ -290,20 +346,29 @@ limit 1
             barThickness: 6,
             maxBarThickness: 8,
             minBarLength: 2,
-            data: [
-              ageGroup[0].a10_cnt_per * 100,
-              ageGroup[0].a20_cnt_per * 100,
-              ageGroup[0].a30_cnt_per * 100,
-              ageGroup[0].a40_cnt_per * 100,
-              ageGroup[0].a50_cnt_per * 100,
-              ageGroup[0].a60_cnt_per * 100,
-            ],
-            labels: ['10대', '20대', '30대', '40대', '50대', '60대 이상'],
+            data: datas,
+            backgroundColor: backgroundColor,
           },
         ],
+        labels: ['10대', '20대', '30대', '40대', '50대', '60대 이상'],
       };
       allData.push({ countData: countData });
-
+      const revDatas = [
+        ageGroup[0].a10_amt_per * 100,
+        ageGroup[0].a20_amt_per * 100,
+        ageGroup[0].a30_amt_per * 100,
+        ageGroup[0].a40_amt_per * 100,
+        ageGroup[0].a50_amt_per * 100,
+        ageGroup[0].a60_amt_per * 100,
+      ];
+      const revBackgroundColor = [];
+      revDatas.map(data => {
+        if (data === Math.max(...revDatas)) {
+          revBackgroundColor.push('rgb(23,162,184)');
+        } else {
+          revBackgroundColor.push('rgb(232,93,71)');
+        }
+      });
       const revenueData = {
         datasets: [
           {
@@ -311,17 +376,11 @@ limit 1
             barThickness: 6,
             maxBarThickness: 8,
             minBarLength: 2,
-            data: [
-              ageGroup[0].a10_amt_per * 100,
-              ageGroup[0].a20_amt_per * 100,
-              ageGroup[0].a30_amt_per * 100,
-              ageGroup[0].a40_amt_per * 100,
-              ageGroup[0].a50_amt_per * 100,
-              ageGroup[0].a60_amt_per * 100,
-            ],
-            labels: ['10대', '20대', '30대', '40대', '50대', '60대 이상'],
+            data: revDatas,
+            backgroundColor: revBackgroundColor,
           },
         ],
+        labels: ['10대', '20대', '30대', '40대', '50대', '60대 이상'],
       };
       allData.push({ revenueData: revenueData });
 
@@ -348,9 +407,26 @@ from (select B.baeminCategoryName, B.s_small_category_nm, A.*
              and B.baeminCategoryName = '${analysisTabListDto.baeminCategoryName}'
              and A.yymm = (select max(yymm) from kb_delivery_prep)
        order by amt_per_store desc) A limit 1;`);
-    console.log(byDay);
+    const labels = ['일', '월', '화', '수', '목', '금', '토'];
     if (byDay && byDay.length > 0) {
       const allData = [];
+      const datas = [
+        byDay[0].sun_cnt_per * 100,
+        byDay[0].mon_cnt_per * 100,
+        byDay[0].tue_cnt_per * 100,
+        byDay[0].wed_cnt_per * 100,
+        byDay[0].thu_cnt_per * 100,
+        byDay[0].fri_cnt_per * 100,
+        byDay[0].sat_cnt_per * 100,
+      ];
+      const backgroundColor = [];
+      datas.map(data => {
+        if (data === Math.max(...datas)) {
+          backgroundColor.push('rgb(23,162,184)');
+        } else {
+          backgroundColor.push('rgb(232,93,71)');
+        }
+      });
       const countData = {
         datasets: [
           {
@@ -358,20 +434,31 @@ from (select B.baeminCategoryName, B.s_small_category_nm, A.*
             barThickness: 6,
             maxBarThickness: 8,
             minBarLength: 2,
-            data: [
-              byDay[0].sun_cnt_per * 100,
-              byDay[0].mon_cnt_per * 100,
-              byDay[0].tue_cnt_per * 100,
-              byDay[0].wed_cnt_per * 100,
-              byDay[0].thu_cnt_per * 100,
-              byDay[0].fri_cnt_per * 100,
-              byDay[0].sat_cnt_per * 100,
-            ],
+            data: datas,
+            backgroundColor: backgroundColor,
           },
         ],
+        labels: labels,
       };
       allData.push({ countData: countData });
 
+      const revBackgroundColor = [];
+      const revDatas = [
+        byDay[0].sun_amt_per * 100,
+        byDay[0].mon_amt_per * 100,
+        byDay[0].tue_amt_per * 100,
+        byDay[0].wed_amt_per * 100,
+        byDay[0].thu_amt_per * 100,
+        byDay[0].fri_amt_per * 100,
+        byDay[0].sat_amt_per * 100,
+      ];
+      revDatas.map(data => {
+        if (data === Math.max(...revDatas)) {
+          revBackgroundColor.push('rgb(23,162,184)');
+        } else {
+          revBackgroundColor.push('rgb(232,93,71)');
+        }
+      });
       const revenueData = {
         datasets: [
           {
@@ -379,17 +466,11 @@ from (select B.baeminCategoryName, B.s_small_category_nm, A.*
             barThickness: 6,
             maxBarThickness: 8,
             minBarLength: 2,
-            data: [
-              byDay[0].sun_amt_per * 100,
-              byDay[0].mon_amt_per * 100,
-              byDay[0].tue_amt_per * 100,
-              byDay[0].wed_amt_per * 100,
-              byDay[0].thu_amt_per * 100,
-              byDay[0].fri_amt_per * 100,
-              byDay[0].sat_amt_per * 100,
-            ],
+            data: revDatas,
+            backgroundColor: revBackgroundColor,
           },
         ],
+        labels: labels,
       };
       allData.push({ revenueData: revenueData });
       return allData;
