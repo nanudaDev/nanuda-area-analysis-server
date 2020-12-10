@@ -322,6 +322,23 @@ limit 1
 
     if (ageGroup && ageGroup.length > 0) {
       const allData = [];
+      const backgroundColor = [];
+      const datas = [
+        ageGroup[0].a10_cnt_per * 100,
+        ageGroup[0].a20_cnt_per * 100,
+        ageGroup[0].a30_cnt_per * 100,
+        ageGroup[0].a40_cnt_per * 100,
+        ageGroup[0].a50_cnt_per * 100,
+        ageGroup[0].a60_cnt_per * 100,
+      ];
+      datas.map(data => {
+        if (data === Math.max(...datas)) {
+          backgroundColor.push('rgb(23,162,184)');
+        } else {
+          backgroundColor.push('rgb(232,93,71)');
+        }
+      });
+
       const countData = {
         datasets: [
           {
@@ -329,20 +346,29 @@ limit 1
             barThickness: 6,
             maxBarThickness: 8,
             minBarLength: 2,
-            data: [
-              ageGroup[0].a10_cnt_per * 100,
-              ageGroup[0].a20_cnt_per * 100,
-              ageGroup[0].a30_cnt_per * 100,
-              ageGroup[0].a40_cnt_per * 100,
-              ageGroup[0].a50_cnt_per * 100,
-              ageGroup[0].a60_cnt_per * 100,
-            ],
-            labels: ['10대', '20대', '30대', '40대', '50대', '60대 이상'],
+            data: datas,
+            backgroundColor: backgroundColor,
           },
         ],
+        labels: ['10대', '20대', '30대', '40대', '50대', '60대 이상'],
       };
       allData.push({ countData: countData });
-
+      const revDatas = [
+        ageGroup[0].a10_amt_per * 100,
+        ageGroup[0].a20_amt_per * 100,
+        ageGroup[0].a30_amt_per * 100,
+        ageGroup[0].a40_amt_per * 100,
+        ageGroup[0].a50_amt_per * 100,
+        ageGroup[0].a60_amt_per * 100,
+      ];
+      const revBackgroundColor = [];
+      revDatas.map(data => {
+        if (data === Math.max(...revDatas)) {
+          revBackgroundColor.push('rgb(23,162,184)');
+        } else {
+          revBackgroundColor.push('rgb(232,93,71)');
+        }
+      });
       const revenueData = {
         datasets: [
           {
@@ -350,17 +376,11 @@ limit 1
             barThickness: 6,
             maxBarThickness: 8,
             minBarLength: 2,
-            data: [
-              ageGroup[0].a10_amt_per * 100,
-              ageGroup[0].a20_amt_per * 100,
-              ageGroup[0].a30_amt_per * 100,
-              ageGroup[0].a40_amt_per * 100,
-              ageGroup[0].a50_amt_per * 100,
-              ageGroup[0].a60_amt_per * 100,
-            ],
-            labels: ['10대', '20대', '30대', '40대', '50대', '60대 이상'],
+            data: revDatas,
+            backgroundColor: revBackgroundColor,
           },
         ],
+        labels: ['10대', '20대', '30대', '40대', '50대', '60대 이상'],
       };
       allData.push({ revenueData: revenueData });
 
@@ -387,9 +407,26 @@ from (select B.baeminCategoryName, B.s_small_category_nm, A.*
              and B.baeminCategoryName = '${analysisTabListDto.baeminCategoryName}'
              and A.yymm = (select max(yymm) from kb_delivery_prep)
        order by amt_per_store desc) A limit 1;`);
-    console.log(byDay);
+    const labels = ['일', '월', '화', '수', '목', '금', '토'];
     if (byDay && byDay.length > 0) {
       const allData = [];
+      const datas = [
+        byDay[0].sun_cnt_per * 100,
+        byDay[0].mon_cnt_per * 100,
+        byDay[0].tue_cnt_per * 100,
+        byDay[0].wed_cnt_per * 100,
+        byDay[0].thu_cnt_per * 100,
+        byDay[0].fri_cnt_per * 100,
+        byDay[0].sat_cnt_per * 100,
+      ];
+      const backgroundColor = [];
+      datas.map(data => {
+        if (data === Math.max(...datas)) {
+          backgroundColor.push('rgb(23,162,184)');
+        } else {
+          backgroundColor.push('rgb(232,93,71)');
+        }
+      });
       const countData = {
         datasets: [
           {
@@ -397,20 +434,31 @@ from (select B.baeminCategoryName, B.s_small_category_nm, A.*
             barThickness: 6,
             maxBarThickness: 8,
             minBarLength: 2,
-            data: [
-              byDay[0].sun_cnt_per * 100,
-              byDay[0].mon_cnt_per * 100,
-              byDay[0].tue_cnt_per * 100,
-              byDay[0].wed_cnt_per * 100,
-              byDay[0].thu_cnt_per * 100,
-              byDay[0].fri_cnt_per * 100,
-              byDay[0].sat_cnt_per * 100,
-            ],
+            data: datas,
+            backgroundColor: backgroundColor,
           },
         ],
+        labels: labels,
       };
       allData.push({ countData: countData });
 
+      const revBackgroundColor = [];
+      const revDatas = [
+        byDay[0].sun_amt_per * 100,
+        byDay[0].mon_amt_per * 100,
+        byDay[0].tue_amt_per * 100,
+        byDay[0].wed_amt_per * 100,
+        byDay[0].thu_amt_per * 100,
+        byDay[0].fri_amt_per * 100,
+        byDay[0].sat_amt_per * 100,
+      ];
+      revDatas.map(data => {
+        if (data === Math.max(...revDatas)) {
+          revBackgroundColor.push('rgb(23,162,184)');
+        } else {
+          revBackgroundColor.push('rgb(232,93,71)');
+        }
+      });
       const revenueData = {
         datasets: [
           {
@@ -418,17 +466,11 @@ from (select B.baeminCategoryName, B.s_small_category_nm, A.*
             barThickness: 6,
             maxBarThickness: 8,
             minBarLength: 2,
-            data: [
-              byDay[0].sun_amt_per * 100,
-              byDay[0].mon_amt_per * 100,
-              byDay[0].tue_amt_per * 100,
-              byDay[0].wed_amt_per * 100,
-              byDay[0].thu_amt_per * 100,
-              byDay[0].fri_amt_per * 100,
-              byDay[0].sat_amt_per * 100,
-            ],
+            data: revDatas,
+            backgroundColor: revBackgroundColor,
           },
         ],
+        labels: labels,
       };
       allData.push({ revenueData: revenueData });
       return allData;
