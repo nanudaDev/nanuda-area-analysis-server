@@ -3,6 +3,7 @@ import { InjectEntityManager } from '@nestjs/typeorm';
 import { BaseService } from 'src/core';
 import { AgeGroupModifier } from 'src/core/';
 import { EntityManager } from 'typeorm';
+import { AnalysisSummaryIndex } from './analysis-summary-index-test.entity';
 import { AnalysisTabListDto } from './dto';
 
 class AnalysisSummary {
@@ -24,14 +25,33 @@ export class AnalysisTabService extends BaseService {
   }
 
   /**
+   * check index
+   * @param analysisTabListDto
+   */
+  async checkIndex(analysisTabListDto: AnalysisTabListDto): Promise<boolean> {
+    const checkIndex = await this.wqEntityManager
+      .getRepository(AnalysisSummaryIndex)
+      .findOne({ where: { bdongCode: analysisTabListDto.bdongCode } });
+    if (checkIndex) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  /**
    * 상권 요약
    * @param analysisTabListDto
    */
   async analysisSummary(
     analysisTabListDto: AnalysisTabListDto,
   ): Promise<AnalysisSummary> {
-    const storeCount = await this.wqEntityManager
-      .query(`select count(*) as storeCount
+    const checkIndex = await this.wqEntityManager
+      .getRepository(AnalysisSummaryIndex)
+      .findOne({ where: { bdongCode: analysisTabListDto.bdongCode } });
+    if (!checkIndex) {
+      const storeCount = await this.wqEntityManager
+        .query(`select count(*) as storeCount
       from kr_stores_restaurant A
       join commercial_business_category_code B
       on A.smallCode = B.smallCode
@@ -39,18 +59,18 @@ export class AnalysisTabService extends BaseService {
           and B.baeminCategoryName is not null
           and A.bdongCode = ${analysisTabListDto.bdongCode}`);
 
-    //   총세대수
-    const houseCount = await this.wqEntityManager
-      .query(`select sum(genTotal) as houseCount
+      //   총세대수
+      const houseCount = await this.wqEntityManager
+        .query(`select sum(genTotal) as houseCount
     from kr_seoul_gen
     where hdongCode in (select hdongCode 
                         from code_hdong_bdong 
                         where bdongCode = ${analysisTabListDto.bdongCode})
     ;`);
 
-    // 주거 인구수
-    const resPopulationCount = await this.wqEntityManager
-      .query(`select round(sum(totalCntAvg)) as resPopulationCount
+      // 주거 인구수
+      const resPopulationCount = await this.wqEntityManager
+        .query(`select round(sum(totalCntAvg)) as resPopulationCount
       from (select hdongCode, avg(TotalCnt) as totalCntAvg
               from kr_seoul_living_local
               where hdongCode in (select hdongCode 
@@ -61,18 +81,18 @@ export class AnalysisTabService extends BaseService {
               group by hdongCode) A
       ;`);
 
-    // 직장인 수
-    const workerCount = await this.wqEntityManager
-      .query(`select sum(employeeCnt) as employeeCount
+      // 직장인 수
+      const workerCount = await this.wqEntityManager
+        .query(`select sum(employeeCnt) as employeeCount
       from kr_nps t1
       left join code_bdong t2
       on t1.bdongCode = t2.bdongCode
       where t1.bdongCode = ${analysisTabListDto.bdongCode}
       ;`);
 
-    // 유동인구
-    const movingPopulationCount = await this.wqEntityManager
-      .query(`select round(sum(totalCntAvg)) as movingPopulationCount
+      // 유동인구
+      const movingPopulationCount = await this.wqEntityManager
+        .query(`select round(sum(totalCntAvg)) as movingPopulationCount
       from (select hdongCode, avg(TotalCnt) as totalCntAvg
               from kr_seoul_living_local 
               where hdongCode in (select hdongCode 
@@ -83,9 +103,9 @@ export class AnalysisTabService extends BaseService {
               group by hdongCode) A
       ;`);
 
-    //   주요 연령대
-    const importantAgeGroup = await this.wqEntityManager
-      .query(`SELECT @var_max_val:= GREATEST(A10, A20, A30, A40, A50, A60) AS max_value,
+      //   주요 연령대
+      const importantAgeGroup = await this.wqEntityManager
+        .query(`SELECT @var_max_val:= GREATEST(A10, A20, A30, A40, A50, A60) AS max_value,
     CASE @var_max_val WHEN A10 THEN 'A10'
                       WHEN A20 THEN 'A20'
                       WHEN A30 THEN 'A30'
@@ -115,8 +135,8 @@ FROM
  ) c
 ;`);
 
-    const averageSurvivalYears = await this.wqEntityManager
-      .query(`select round(avg(survivalDays)/365, 2) as averageSurvivalYears
+      const averageSurvivalYears = await this.wqEntityManager
+        .query(`select round(avg(survivalDays)/365, 2) as averageSurvivalYears
 from kr_license_test A
 join kr_license_code B
 on A.storeCategory = B.storeCategory
@@ -126,28 +146,37 @@ where A.detailStateName = '폐업'
 ;
 `);
 
-    const result = await Promise.all([
-      storeCount[0],
-      houseCount[0],
-      resPopulationCount[0],
-      workerCount[0],
-      movingPopulationCount[0],
-      importantAgeGroup[0],
-      averageSurvivalYears[0],
-    ]);
+      const result = await Promise.all([
+        storeCount[0],
+        houseCount[0],
+        resPopulationCount[0],
+        workerCount[0],
+        movingPopulationCount[0],
+        importantAgeGroup[0],
+        averageSurvivalYears[0],
+      ]);
 
-    let summary = new AnalysisSummary();
-    summary.storeCount = result[0].storeCount;
-    summary.houseCount = result[1].houseCount;
-    summary.resPopulationCount = result[2].resPopulationCount;
-    summary.employeeCount = result[3].employeeCount;
-    summary.movingPopulationCount = result[4].movingPopulationCount;
-    summary.importantAgeGroup = AgeGroupModifier(
-      result[5].max_value_column_name,
-    );
-    summary.averageSurvivalYears = `${result[6].averageSurvivalYears}년`;
-
-    return summary;
+      let summary = new AnalysisSummary();
+      summary.storeCount = result[0].storeCount;
+      summary.houseCount = result[1].houseCount;
+      summary.resPopulationCount = result[2].resPopulationCount;
+      summary.employeeCount = result[3].employeeCount;
+      summary.movingPopulationCount = result[4].movingPopulationCount;
+      summary.importantAgeGroup = AgeGroupModifier(
+        result[5].max_value_column_name,
+      );
+      summary.averageSurvivalYears = `${result[6].averageSurvivalYears}년`;
+      // await save to analysis summary
+      let index = new AnalysisSummaryIndex();
+      index.bdongCode = analysisTabListDto.bdongCode;
+      index.result = summary;
+      index = await this.wqEntityManager
+        .getRepository(AnalysisSummaryIndex)
+        .save(index);
+      return summary;
+    } else {
+      return checkIndex.result;
+    }
   }
 
   /**
