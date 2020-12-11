@@ -371,10 +371,7 @@ limit 1
       });
       const revenueData = {
         datasets: [
-          {
-            data: revDatas,
-            backgroundColor: revBackgroundColor,
-          },
+          { label: '', data: revDatas, backgroundColor: revBackgroundColor },
         ],
         labels: ['10대', '20대', '30대', '40대', '50대', '60대 이상'],
       };
@@ -425,10 +422,7 @@ from (select B.baeminCategoryName, B.s_small_category_nm, A.*
       });
       const countData = {
         datasets: [
-          {
-            data: datas,
-            backgroundColor: backgroundColor,
-          },
+          { label: '', data: datas, backgroundColor: backgroundColor },
         ],
         labels: labels,
       };
@@ -453,10 +447,7 @@ from (select B.baeminCategoryName, B.s_small_category_nm, A.*
       });
       const revenueData = {
         datasets: [
-          {
-            data: revDatas,
-            backgroundColor: revBackgroundColor,
-          },
+          { label: '', data: revDatas, backgroundColor: revBackgroundColor },
         ],
         labels: labels,
       };
@@ -615,12 +606,7 @@ from (SELECT hdongCode, avg(male) AS male, avg(female) AS female
       }
     });
     const genderData = {
-      datasets: [
-        {
-          data: datas,
-          backgroundColor: backgroundColor,
-        },
-      ],
+      datasets: [{ label: '', data: datas, backgroundColor: backgroundColor }],
       labels: ['남성', '여성'],
     };
     allData.push(genderData);
@@ -671,12 +657,7 @@ from (SELECT hdongCode, avg(A10) AS A10, avg(A20) AS A20, avg(A30) AS A30, avg(A
       }
     });
     const ageGroupData = {
-      datasets: [
-        {
-          data: datas,
-          backgroundColor: backgroundColor,
-        },
-      ],
+      datasets: [{ label: '', data: datas, backgroundColor: backgroundColor }],
       labels: ['10대', '20대', '30대', '40대', '50대', '60대 이상'],
     };
     allData.push(ageGroupData);
@@ -727,12 +708,7 @@ where hdongCode in (select hdongCode
       }
     });
     const residentialData = {
-      datasets: [
-        {
-          data: datas,
-          backgroundColor: backgroundColor,
-        },
-      ],
+      datasets: [{ label: '', data: datas, backgroundColor: backgroundColor }],
       labels: [
         '1인 가구',
         '2인 가구',
