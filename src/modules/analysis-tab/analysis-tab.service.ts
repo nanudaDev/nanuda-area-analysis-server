@@ -422,10 +422,6 @@ from (select B.baeminCategoryName, B.s_small_category_nm, A.*
       const countData = {
         datasets: [
           {
-            barPercentage: 0.5,
-            barThickness: 6,
-            maxBarThickness: 8,
-            minBarLength: 2,
             data: datas,
             backgroundColor: backgroundColor,
           },
