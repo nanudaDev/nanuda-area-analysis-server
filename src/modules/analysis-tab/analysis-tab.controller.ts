@@ -189,4 +189,21 @@ export class AnalysisTabController extends BaseController {
       analysisTabListDto,
     );
   }
+
+  @Get('/analysis-tab/population/moving-population-gender-ratio')
+  @ApiOperation({ description: '법정동 코드만 보낸다' })
+  async findMovingGenderRatio(@Query() analysisTabListDto: AnalysisTabListDto) {
+    return await this.analysisTabService.findMovingPopulationGenderRatio(
+      analysisTabListDto,
+    );
+  }
+
+  @Get('/analysis-tab/population/moving-population-gender-and-age-ratio')
+  async findMovingAgeAndGenderRatio(
+    @Query() analysisTabListDto: AnalysisTabListDto,
+  ) {
+    return await this.analysisTabService.findMovingPopulationAgeAndGenderRatio(
+      analysisTabListDto,
+    );
+  }
 }
