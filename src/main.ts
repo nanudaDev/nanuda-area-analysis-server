@@ -89,7 +89,7 @@ async function bootstrap() {
     SwaggerModule.setup('swagger', app, document);
   }
 
-  await app.listen(4200);
+  await app.listen(4400);
 
   const url = await app.getUrl();
   if (process.env.NODE_ENV === ENVIRONMENT.DEVELOPMENT) {
