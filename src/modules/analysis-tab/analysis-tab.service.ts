@@ -230,7 +230,6 @@ from (select t1.baeminCategoryName,
       group by t1.baeminCategoryName
       order by w_total_amt_avg desc) g1
 ;`);
-
     return ratio;
   }
 
@@ -747,5 +746,113 @@ where hdongCode in (select hdongCode
       `);
 
     return totalCount[0];
+  }
+
+  /**
+   * 점심 업종 매출 순위
+   * @param analysisTabListDto
+   */
+  async findBestCategoryByLunch(analysisTabListDto: AnalysisTabListDto) {
+    const lunch = await this.wqEntityManager
+      .query(`select A.gender, A.age, A.hour, avg(trans_amt) as trans_amt_avg, A.rank_1_bm, A.rank_1_nm
+      from (select t1.*, 
+                     t2.baeminCategoryName as rank_1_bm,
+                     t2.s_small_category_nm as rank_1_nm,
+                     t3.baeminCategoryName as rank_2_bm,
+                     t3.s_small_category_nm as rank_2_nm,
+                     t4.baeminCategoryName as rank_3_bm,
+                     t4.s_small_category_nm as rank_3_nm
+              from kb_delivery_store t1
+              left join code_kb_category t2
+              on t1.rank_1 = t2.s_small_category_cd
+              left join code_kb_category t3
+              on t1.rank_2 = t3.s_small_category_cd
+              left join code_kb_category t4
+              on t1.rank_3 = t4.s_small_category_cd) A
+      where A.admi_cd = ${analysisTabListDto.bdongCode} 
+           and A.yymm =  (select max(yymm) from kb_delivery_store) 
+           and A.age != '기타'
+           and A.gender != '기타'
+           and A.weekday = 4
+           and A.hour = 1114
+           and A.rank_1_bm is not null
+      group by A.gender, A.age, A.hour
+      order by trans_amt_avg desc
+      limit 3
+      ;`);
+
+    return lunch;
+  }
+
+  /**
+   * 저녁 업종 매출 순위
+   * @param analysisTabListDto
+   */
+  async findBestCategoryByDinner(analysisTabListDto: AnalysisTabListDto) {
+    const dinner = await this.wqEntityManager
+      .query(`select A.gender, A.age, A.hour, avg(trans_amt) as trans_amt_avg, A.rank_1_bm, A.rank_1_nm
+    from (select t1.*, 
+                   t2.baeminCategoryName as rank_1_bm,
+                   t2.s_small_category_nm as rank_1_nm,
+                   t3.baeminCategoryName as rank_2_bm,
+                   t3.s_small_category_nm as rank_2_nm,
+                   t4.baeminCategoryName as rank_3_bm,
+                   t4.s_small_category_nm as rank_3_nm
+            from kb_delivery_store t1
+            left join code_kb_category t2
+            on t1.rank_1 = t2.s_small_category_cd
+            left join code_kb_category t3
+            on t1.rank_2 = t3.s_small_category_cd
+            left join code_kb_category t4
+            on t1.rank_3 = t4.s_small_category_cd) A
+    where A.admi_cd = ${analysisTabListDto.bdongCode}  
+         and A.yymm =  (select max(yymm) from kb_delivery_store) 
+         and A.age != '기타'
+         and A.gender != '기타'
+         and A.weekday = 4
+         and A.hour = 1721
+         and A.rank_1_bm is not null
+    group by A.gender, A.age, A.hour
+    order by trans_amt_avg desc
+    limit 3
+    ;`);
+
+    return dinner;
+  }
+
+  /**
+   * 야식 업종 매출 순위
+   * @param analysisTabListDto
+   */
+  async findBestCategoryByLateNight(analysisTabListDto: AnalysisTabListDto) {
+    const lateNight = await this.wqEntityManager
+      .query(`select A.gender, A.age, A.hour, avg(trans_amt) as trans_amt_avg, A.rank_1_bm, A.rank_1_nm
+      from (select t1.*, 
+                     t2.baeminCategoryName as rank_1_bm,
+                     t2.s_small_category_nm as rank_1_nm,
+                     t3.baeminCategoryName as rank_2_bm,
+                     t3.s_small_category_nm as rank_2_nm,
+                     t4.baeminCategoryName as rank_3_bm,
+                     t4.s_small_category_nm as rank_3_nm
+              from kb_delivery_store t1
+              left join code_kb_category t2
+              on t1.rank_1 = t2.s_small_category_cd
+              left join code_kb_category t3
+              on t1.rank_2 = t3.s_small_category_cd
+              left join code_kb_category t4
+              on t1.rank_3 = t4.s_small_category_cd) A
+      where A.admi_cd = ${analysisTabListDto.bdongCode}  
+           and A.yymm =  (select max(yymm) from kb_delivery_store) 
+           and A.age != '기타'
+           and A.gender != '기타'
+           and A.weekday = 4
+           and A.hour = 2124
+           and A.rank_1_bm is not null
+      group by A.gender, A.age, A.hour
+      order by trans_amt_avg desc
+      limit 3
+      ;`);
+
+    return lateNight;
   }
 }
