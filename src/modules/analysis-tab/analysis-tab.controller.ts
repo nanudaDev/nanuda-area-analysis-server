@@ -79,6 +79,42 @@ export class AnalysisTabController extends BaseController {
   }
 
   /**
+   * 점심별
+   * @param analysisTabListDto
+   */
+  @Get('/analysis-tab/revenue-analysis-by-lunch')
+  @ApiOperation({ description: '법정동 코드만 보낸다' })
+  async findByLunch(@Query() analysisTabListDto: AnalysisTabListDto) {
+    return await this.analysisTabService.findBestCategoryByLunch(
+      analysisTabListDto,
+    );
+  }
+
+  /**
+   * 저녁별
+   * @param analysisTabListDto
+   */
+  @Get('/analysis-tab/revenue-analysis-by-dinner')
+  @ApiOperation({ description: '법정동 코드만 보낸다' })
+  async findByDinner(@Query() analysisTabListDto: AnalysisTabListDto) {
+    return await this.analysisTabService.findBestCategoryByDinner(
+      analysisTabListDto,
+    );
+  }
+
+  /**
+   * 야식별
+   * @param analysisTabListDto
+   */
+  @Get('/analysis-tab/revenue-analysis-by-late-night')
+  @ApiOperation({ description: '법정동 코드만 보낸다' })
+  async findByLateNight(@Query() analysisTabListDto: AnalysisTabListDto) {
+    return await this.analysisTabService.findBestCategoryByLateNight(
+      analysisTabListDto,
+    );
+  }
+
+  /**
    * 업종분석
    * @param analysisTabListDto
    */

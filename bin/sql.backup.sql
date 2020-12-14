@@ -580,3 +580,85 @@ from (SELECT hdongCode, avg(A10) AS A10, avg(A20) AS A20, avg(A30) AS A30, avg(A
 					  AND date BETWEEN DATE_ADD(NOW(), INTERVAL -6 MONTH ) AND NOW()) A
 		GROUP BY hdongCode) B
 ;
+
+## 점심
+select A.gender, A.age, A.hour, avg(trans_amt) as trans_amt_avg, A.rank_1_bm, A.rank_1_nm
+from (select t1.*, 
+			   t2.baeminCategoryName as rank_1_bm,
+               t2.s_small_category_nm as rank_1_nm,
+			   t3.baeminCategoryName as rank_2_bm,
+               t3.s_small_category_nm as rank_2_nm,
+			   t4.baeminCategoryName as rank_3_bm,
+               t4.s_small_category_nm as rank_3_nm
+		from wq.kb_delivery_store t1
+		left join wq.code_kb_category t2
+		on t1.rank_1 = t2.s_small_category_cd
+		left join wq.code_kb_category t3
+		on t1.rank_2 = t3.s_small_category_cd
+		left join wq.code_kb_category t4
+		on t1.rank_3 = t4.s_small_category_cd) A
+where A.admi_cd = @bdongCode 
+     and A.yymm =  (select max(yymm) from wq.kb_delivery_store) 
+     and A.age != '기타'
+     and A.gender != '기타'
+     and A.weekday = 4
+     and A.hour = 1114
+     and A.rank_1_bm is not null
+group by A.gender, A.age, A.hour
+order by trans_amt_avg desc
+limit 3
+;
+## 저녁
+select A.gender, A.age, A.hour, avg(trans_amt) as trans_amt_avg, A.rank_1_bm, A.rank_1_nm
+from (select t1.*, 
+			   t2.baeminCategoryName as rank_1_bm,
+               t2.s_small_category_nm as rank_1_nm,
+			   t3.baeminCategoryName as rank_2_bm,
+               t3.s_small_category_nm as rank_2_nm,
+			   t4.baeminCategoryName as rank_3_bm,
+               t4.s_small_category_nm as rank_3_nm
+		from wq.kb_delivery_store t1
+		left join wq.code_kb_category t2
+		on t1.rank_1 = t2.s_small_category_cd
+		left join wq.code_kb_category t3
+		on t1.rank_2 = t3.s_small_category_cd
+		left join wq.code_kb_category t4
+		on t1.rank_3 = t4.s_small_category_cd) A
+where A.admi_cd = @bdongCode 
+     and A.yymm =  (select max(yymm) from wq.kb_delivery_store) 
+     and A.age != '기타'
+     and A.gender != '기타'
+     and A.weekday = 4
+     and A.hour = 1721
+     and A.rank_1_bm is not null
+group by A.gender, A.age, A.hour
+order by trans_amt_avg desc
+limit 3
+;
+## 야식
+select A.gender, A.age, A.hour, avg(trans_amt) as trans_amt_avg, A.rank_1_bm, A.rank_1_nm
+from (select t1.*, 
+			   t2.baeminCategoryName as rank_1_bm,
+               t2.s_small_category_nm as rank_1_nm,
+			   t3.baeminCategoryName as rank_2_bm,
+               t3.s_small_category_nm as rank_2_nm,
+			   t4.baeminCategoryName as rank_3_bm,
+               t4.s_small_category_nm as rank_3_nm
+		from wq.kb_delivery_store t1
+		left join wq.code_kb_category t2
+		on t1.rank_1 = t2.s_small_category_cd
+		left join wq.code_kb_category t3
+		on t1.rank_2 = t3.s_small_category_cd
+		left join wq.code_kb_category t4
+		on t1.rank_3 = t4.s_small_category_cd) A
+where A.admi_cd = @bdongCode 
+     and A.yymm =  (select max(yymm) from wq.kb_delivery_store) 
+     and A.age != '기타'
+     and A.gender != '기타'
+     and A.weekday = 4
+     and A.hour = 2124
+     and A.rank_1_bm is not null
+group by A.gender, A.age, A.hour
+order by trans_amt_avg desc
+limit 3
+;
