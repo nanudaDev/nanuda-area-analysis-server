@@ -184,6 +184,7 @@ where A.detailStateName = '폐업'
    * @param analysisTabListDto
    */
   async categoryRatio(analysisTabListDto: AnalysisTabListDto) {
+    console.log(analysisTabListDto);
     const ratio = await this.wqEntityManager.query(`select g1.*, 
       round(g1.w_total_cnt_avg / (select sum(w_total_cnt_avg) as w_total_cnt_avg_sum
                                   from (select t1.baeminCategoryName, 
@@ -253,48 +254,51 @@ from (select t1.baeminCategoryName,
                     and A.yymm = (select max(yymm) from kb_delivery_prep)
               order by amt_per_store desc) A
       limit 1;`);
-
-    const allData = [];
-    const genderLabel = ['남성', '여성', '알 수 없음'];
-    // 주문 건수 위주
-    const countData = {
-      datasets: [
-        {
-          data: [
-            genderRatio[0].m_cnt_per * 100,
-            genderRatio[0].fm_cnt_per * 100,
-            genderRatio[0].bz_cnt_per * 100,
-          ],
-          backgroundColor: [
-            'rgb(23,162,184)',
-            'rgb(232,93,71)',
-            'rgb(100,100,100)',
-          ],
-        },
-      ],
-      labels: genderLabel,
-    };
-    allData.push({ countData: countData });
-    // 매출 건수 위주
-    const revenueData = {
-      datasets: [
-        {
-          data: [
-            genderRatio[0].m_amt_per * 100,
-            genderRatio[0].fm_amt_per * 100,
-            genderRatio[0].bz_amt_per * 100,
-          ],
-          backgroundColor: [
-            'rgb(23,162,184)',
-            'rgb(232,93,71)',
-            'rgb(100,100,100)',
-          ],
-        },
-      ],
-      labels: genderLabel,
-    };
-    allData.push({ revenueData: revenueData });
-    return allData;
+    if (genderRatio && genderRatio.length > 0) {
+      const allData = [];
+      const genderLabel = ['남성', '여성', '알 수 없음'];
+      // 주문 건수 위주
+      const countData = {
+        datasets: [
+          {
+            data: [
+              genderRatio[0].m_cnt_per * 100,
+              genderRatio[0].fm_cnt_per * 100,
+              genderRatio[0].bz_cnt_per * 100,
+            ],
+            backgroundColor: [
+              'rgb(23,162,184)',
+              'rgb(232,93,71)',
+              'rgb(100,100,100)',
+            ],
+          },
+        ],
+        labels: genderLabel,
+      };
+      allData.push({ countData: countData });
+      // 매출 건수 위주
+      const revenueData = {
+        datasets: [
+          {
+            data: [
+              genderRatio[0].m_amt_per * 100,
+              genderRatio[0].fm_amt_per * 100,
+              genderRatio[0].bz_amt_per * 100,
+            ],
+            backgroundColor: [
+              'rgb(23,162,184)',
+              'rgb(232,93,71)',
+              'rgb(100,100,100)',
+            ],
+          },
+        ],
+        labels: genderLabel,
+      };
+      allData.push({ revenueData: revenueData });
+      return allData;
+    } else {
+      return { result: 'no data available' };
+    }
   }
 
   /**
@@ -367,10 +371,7 @@ limit 1
       });
       const revenueData = {
         datasets: [
-          {
-            data: revDatas,
-            backgroundColor: revBackgroundColor,
-          },
+          { label: '', data: revDatas, backgroundColor: revBackgroundColor },
         ],
         labels: ['10대', '20대', '30대', '40대', '50대', '60대 이상'],
       };
@@ -421,14 +422,7 @@ from (select B.baeminCategoryName, B.s_small_category_nm, A.*
       });
       const countData = {
         datasets: [
-          {
-            barPercentage: 0.5,
-            barThickness: 6,
-            maxBarThickness: 8,
-            minBarLength: 2,
-            data: datas,
-            backgroundColor: backgroundColor,
-          },
+          { label: '', data: datas, backgroundColor: backgroundColor },
         ],
         labels: labels,
       };
@@ -453,10 +447,7 @@ from (select B.baeminCategoryName, B.s_small_category_nm, A.*
       });
       const revenueData = {
         datasets: [
-          {
-            data: revDatas,
-            backgroundColor: revBackgroundColor,
-          },
+          { label: '', data: revDatas, backgroundColor: revBackgroundColor },
         ],
         labels: labels,
       };
@@ -615,12 +606,7 @@ from (SELECT hdongCode, avg(male) AS male, avg(female) AS female
       }
     });
     const genderData = {
-      datasets: [
-        {
-          data: datas,
-          backgroundColor: backgroundColor,
-        },
-      ],
+      datasets: [{ label: '', data: datas, backgroundColor: backgroundColor }],
       labels: ['남성', '여성'],
     };
     allData.push(genderData);
@@ -671,12 +657,7 @@ from (SELECT hdongCode, avg(A10) AS A10, avg(A20) AS A20, avg(A30) AS A30, avg(A
       }
     });
     const ageGroupData = {
-      datasets: [
-        {
-          data: datas,
-          backgroundColor: backgroundColor,
-        },
-      ],
+      datasets: [{ label: '', data: datas, backgroundColor: backgroundColor }],
       labels: ['10대', '20대', '30대', '40대', '50대', '60대 이상'],
     };
     allData.push(ageGroupData);
@@ -727,12 +708,7 @@ where hdongCode in (select hdongCode
       }
     });
     const residentialData = {
-      datasets: [
-        {
-          data: datas,
-          backgroundColor: backgroundColor,
-        },
-      ],
+      datasets: [{ label: '', data: datas, backgroundColor: backgroundColor }],
       labels: [
         '1인 가구',
         '2인 가구',
