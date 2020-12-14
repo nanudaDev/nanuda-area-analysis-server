@@ -749,6 +749,95 @@ where hdongCode in (select hdongCode
   }
 
   /**
+   * 유동인구 성별 비율
+   * @param analysisTabListDto
+   */
+  async findMovingPopulationGenderRatio(
+    analysisTabListDto: AnalysisTabListDto,
+  ) {
+    const genderRatio = await this.wqEntityManager
+      .query(`select round(sum(B.male)) as male, 
+      round(sum(B.female)) as female
+from (SELECT hdongCode, avg(male) AS male, avg(female) AS female
+     FROM
+           (SELECT date, weekday, time, hdongCode,
+                   M10+M15+M20+M25+M30+M35+M40+M45+M50+M55+M60+M65+M70 AS male,
+                   F10+F15+F20+F25+F30+F35+F40+F45+F50+F55+F60+F65+F70 AS female
+            FROM kr_seoul_living_local 
+            WHERE hdongCode in (select hdongCode 
+                                from code_hdong_bdong 
+                                where bdongCode = ${analysisTabListDto.bdongCode})
+                                      AND (time >= 7 and time <= 18)
+                                      AND date BETWEEN DATE_ADD(NOW(), INTERVAL -6 MONTH ) AND NOW()) A
+     GROUP BY hdongCode) B
+;
+`);
+    return genderRatio[0];
+  }
+
+  /**
+   * 유동인구
+   * @param analysisTabListDto
+   */
+  async findMovingPopulationAgeAndGenderRatio(
+    analysisTabListDto: AnalysisTabListDto,
+  ) {
+    const allData = [];
+    const genderRatio = await this.findMovingPopulationGenderRatio(
+      analysisTabListDto,
+    );
+    allData.push({ 남성: genderRatio.male, 여성: genderRatio.female });
+    const ageRatio = await this.wqEntityManager
+      .query(`select round(sum(B.A10)) as A10, 
+      round(sum(B.A20)) as A20, 
+      round(sum(B.A30)) as A30, 
+      round(sum(B.A40)) as A40, 
+      round(sum(B.A50)) as A50, 
+      round(sum(B.A60)) as A60
+from (SELECT hdongCode, avg(A10) AS A10, avg(A20) AS A20, avg(A30) AS A30, avg(A40) AS A40, avg(A50) AS A50, avg(A60) AS A60
+     FROM
+           (SELECT date, weekday, time, hdongCode,
+                      M10+M15+F10+F15 AS A10, 
+                      M20+M25+F20+F25 AS A20, 
+                      M30+M35+F30+F35 AS A30, 
+                      M40+M45+F40+F45 AS A40, 
+                      M50+M55+F50+F55 AS A50,
+                      M60+M65+M70+F60+F65+F70 AS A60
+               FROM kr_seoul_living_local 
+               WHERE hdongCode in (select hdongCode 
+                                   from code_hdong_bdong 
+                                   where bdongCode = ${analysisTabListDto.bdongCode})
+                     AND (time >= 7 and time <= 18)
+                     AND date BETWEEN DATE_ADD(NOW(), INTERVAL -6 MONTH ) AND NOW()) A
+       GROUP BY hdongCode) B
+;`);
+
+    const backgroundColor = [];
+    const datas = [];
+    datas.push(
+      parseInt(ageRatio[0].A10),
+      parseInt(ageRatio[0].A20),
+      parseInt(ageRatio[0].A30),
+      parseInt(ageRatio[0].A40),
+      parseInt(ageRatio[0].A50),
+      parseInt(ageRatio[0].A60),
+    );
+    datas.map(data => {
+      if (data === Math.max(...datas)) {
+        backgroundColor.push('rgb(23, 162, 184)');
+      } else {
+        backgroundColor.push('rgb(232, 93, 71)');
+      }
+    });
+    const ageData = {
+      datasets: [{ label: '', data: datas, backgroundColor: backgroundColor }],
+      labels: ['10대', '20대', '30대', '40대', '50대', '60대 이상'],
+    };
+    allData.push(ageData);
+    return allData;
+  }
+
+  /**
    * 점심 업종 매출 순위
    * @param analysisTabListDto
    */
