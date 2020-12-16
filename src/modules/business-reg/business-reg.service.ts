@@ -1,8 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectEntityManager } from '@nestjs/typeorm';
 import { abort } from 'process';
+import { ORDER_BY_VALUE } from 'src/common';
 import { APPROVAL_STATUS, BaseService } from 'src/core';
 import { EntityManager } from 'typeorm';
+import { KbDeliveryPrep } from '../kb-delivery-prep/kb-delivery-prep.entity';
 import { CompanyDistrict } from '../nanuda-company-entities/nanuda-company-district.entity';
 import { DeliverySpace } from '../nanuda-company-entities/nanuda-delivery-space.entity';
 import { BusinessRegListDto } from './dto';
@@ -52,6 +54,38 @@ export class BusinessRegService extends BaseService {
       //     averageForDistrict[0].monthlyRentFeeSum,
       //   ),
     };
+  }
+
+  /**
+   * get best locations
+   * @param businessRegListDto
+   */
+  async getBestLocations(businessRegListDto: BusinessRegListDto) {
+    const list = this.wqEntityManager
+      .getRepository(KbDeliveryPrep)
+      .createQueryBuilder('kbDeliveryPrep')
+      .CustomInnerJoinAndSelect(['kbCategoryInfo', 'bdongInfo'])
+      .where('kbDeliveryPrep.yymm > 2007')
+      .andWhere('kbDeliveryPrep.admiCd LIKE :seoulCode', { seoulCode: '11%' })
+      .AndWhereLike(
+        'kbDeliveryPrep',
+        'mediumCategoryCd',
+        businessRegListDto.mediumCategoryCd,
+      )
+      .andWhere(
+        `kbCategoryInfo.baeminCategoryName NOT IN ('패스트푸드', '카페/디저트')`,
+      )
+      .andWhere(
+        `kbCategoryInfo.mediumCategoryName NOT IN ('패스트푸드', '커피/음료')`,
+      )
+      .orderBy('kbDeliveryPrep.totalAmt', ORDER_BY_VALUE.DESC)
+      .addOrderBy('kbDeliveryPrep.totalCnt', ORDER_BY_VALUE.DESC)
+      .addOrderBy('kbDeliveryPrep.storeCnt', ORDER_BY_VALUE.ASC)
+      .groupBy('kbDeliveryPrep.admiCd')
+      .limit(20)
+      .getRawMany();
+
+    return await list;
   }
 
   private async __is_above_or_not(initialValue: number, averageValue: number) {

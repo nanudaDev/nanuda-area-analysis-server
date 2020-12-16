@@ -28,6 +28,26 @@ export class BusinessRegListDto extends AnalysisTabListDto {
   @ApiPropertyOptional()
   @IsOptional()
   @Expose()
+  smallCategoryCd?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @Expose()
+  smallCategoryName?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @Expose()
+  mediumCategoryCd?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @Expose()
+  mediumCategoryName?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @Expose()
   deliverySpaceName?: string;
 
   @ApiPropertyOptional()
@@ -41,4 +61,9 @@ export class BusinessRegListDto extends AnalysisTabListDto {
   @IsEnum(ORDER_BY_VALUE)
   @Default(ORDER_BY_VALUE.DESC)
   orderByNo?: ORDER_BY_VALUE;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @Expose()
+  yymm?: string;
 }

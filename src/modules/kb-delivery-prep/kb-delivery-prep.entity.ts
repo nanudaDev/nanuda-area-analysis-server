@@ -6,6 +6,8 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { CodeBdong } from '../code-bdong/code-bdong.entity';
+import { CodeKbCategory } from '../code-kb-category/code-kb-category.entity';
 import { KbCategoryInfo } from '../kb-category-info/kb-category-info.entity';
 
 @Entity({ name: 'kb_delivery_prep' })
@@ -28,6 +30,18 @@ export class KbDeliveryPrep extends BaseEntity<KbDeliveryPrep> {
   mediumCategoryCd: string;
 
   @Column({
+    type: 'bigint',
+    name: 'yymm',
+  })
+  yymm?: string;
+
+  @Column({
+    type: 'bigint',
+    name: 'admi_cd',
+  })
+  admiCd?: number;
+
+  @Column({
     type: 'text',
     name: 's_small_category_cd',
   })
@@ -41,14 +55,31 @@ export class KbDeliveryPrep extends BaseEntity<KbDeliveryPrep> {
 
   @Column({
     type: 'bigint',
+    name: 'total_cnt',
+  })
+  totalCnt: number;
+
+  @Column({
+    type: 'bigint',
     name: 'store_cnt',
   })
   storeCnt?: number;
 
-  @OneToOne(type => KbCategoryInfo)
+  movingPopulationCount?: number;
+
+  firstPersonResidentialCount?: number;
+
+  @OneToOne(type => CodeKbCategory)
   @JoinColumn({
     name: 's_small_category_cd',
-    referencedColumnName: 'sSmallCategoryCd',
+    referencedColumnName: 'smallCategoryCd',
   })
-  kbCategoryInfo?: KbCategoryInfo;
+  kbCategoryInfo?: CodeKbCategory;
+
+  @OneToOne(type => CodeBdong)
+  @JoinColumn({
+    name: 'admi_cd',
+    referencedColumnName: 'bdongCode',
+  })
+  bdongInfo?: CodeBdong;
 }

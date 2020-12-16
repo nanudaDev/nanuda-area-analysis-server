@@ -33,4 +33,14 @@ export class BusinessRegController extends BaseController {
       deliverySpaceNo,
     );
   }
+
+  /**
+   * test
+   * @param businessRegListDto
+   * @param deliverySpaceNo
+   */
+  @Get('/location-analysis/best-locations')
+  async getBestLocations(@Query() businessRegListDto: BusinessRegListDto) {
+    return await this.businessRegService.getBestLocations(businessRegListDto);
+  }
 }
