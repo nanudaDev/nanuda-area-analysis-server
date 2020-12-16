@@ -4,7 +4,7 @@ import { IsEnum, IsOptional } from 'class-validator';
 import { BaseDto } from 'src/core';
 import { BaeminCategoryCode } from 'src/shared';
 
-export class AnalysisTabListDto {
+export class AnalysisTabListDto extends BaseDto<AnalysisTabListDto> {
   @ApiPropertyOptional()
   @IsOptional()
   @Expose()

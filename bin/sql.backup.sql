@@ -662,3 +662,81 @@ group by A.gender, A.age, A.hour
 order by trans_amt_avg desc
 limit 3
 ;
+
+## 입지 분석 초기 쿼리
+
+select T1.*, 
+       T2.w_total_amt_avg as transAmt,
+       T2.w_total_amt_avg_ratio as transAmtRatio,
+       T2.w_total_cnt_avg as transCnt,
+       T2.w_total_cnt_avg_ratio as transCntRatio,
+       @totalCntResid := (select round(sum(totalCntAvg)) as totalCntAvgSum
+		from (select hdongCode, avg(TotalCnt) as totalCntAvg
+			  from wq.kr_seoul_living_local
+			  where hdongCode in (select hdongCode 
+								  from wq.code_hdong_bdong 
+								  where bdongCode = @bdongCode) 
+					and ((time >= 19 and time <= 23) or (time >= 0 and time <= 6))
+					and date BETWEEN DATE_ADD(NOW(), INTERVAL -6 MONTH ) AND NOW()
+			   group by hdongCode) A) as totalCntResid,
+       # 1) 매출비율 / 업종비율
+	   round(T2.w_total_amt_avg_ratio / T1.storeCntRatio, 2) as amtRatio_per_storeRatio,
+       # 2) 주거인구수 / 업종수
+       round(@totalCntResid / T1.storeCnt) as resid_per_store
+from (select A.bdongCode, A.bdongName, B.baeminCategoryName, 
+			   count(*) as storeCnt,
+			   count(*) / sum(count(*)) over() as storeCntRatio
+		from wq.kr_stores_restaurant A
+		join wq.commercial_business_category_code B
+		on A.smallCode = B.smallCode
+		where A.largeCode ='Q' 
+			 and B.baeminCategoryName is not null 
+			 and A.bdongCode = @bdongCode
+		group by B.baeminCategoryName) T1
+left join (select g1.*, 
+				round(g1.w_total_cnt_avg / (select sum(w_total_cnt_avg) as w_total_cnt_avg_sum
+											from (select t1.baeminCategoryName, 
+														   avg(w_total_cnt) as w_total_cnt_avg, 
+														   avg(w_total_amt) as w_total_amt_avg
+													from (select B.baeminCategoryName, B.s_small_category_nm, A.*
+														  from wq.kb_delivery_prep A
+														  join wq.code_kb_category B
+														  on A.s_small_category_cd = B.s_small_category_cd
+														  join wq.code_bdong C
+														  on A.admi_cd = C.bdongCode
+														  where B.baeminCategoryName is not null 
+																and A.admi_cd = @bdongCode) t1
+													group by t1.baeminCategoryName
+													order by w_total_amt_avg desc
+													) t2),4) as w_total_cnt_avg_ratio,
+				round(g1.w_total_amt_avg / (select sum(w_total_amt_avg) as w_total_amt_avg_sum
+											from (select t1.baeminCategoryName, 
+														   avg(w_total_cnt) as w_total_cnt_avg, 
+														   avg(w_total_amt) as w_total_amt_avg
+													from (select B.baeminCategoryName, B.s_small_category_nm, A.*
+														  from wq.kb_delivery_prep A
+														  join wq.code_kb_category B
+														  on A.s_small_category_cd = B.s_small_category_cd
+														  join wq.code_bdong C
+														  on A.admi_cd = C.bdongCode
+														  where B.baeminCategoryName is not null 
+																and A.admi_cd = @bdongCode) t1
+													group by t1.baeminCategoryName
+													order by w_total_amt_avg desc
+													) t2),4) as w_total_amt_avg_ratio
+		from (select t1.baeminCategoryName, 
+					   avg(w_total_cnt) as w_total_cnt_avg, 
+					   avg(w_total_amt) as w_total_amt_avg
+				from (select B.baeminCategoryName, B.s_small_category_nm, A.*
+					  from wq.kb_delivery_prep A
+					  join wq.code_kb_category B
+					  on A.s_small_category_cd = B.s_small_category_cd
+					  join wq.code_bdong C
+					  on A.admi_cd = C.bdongCode
+					  where B.baeminCategoryName is not null 
+							and A.admi_cd = @bdongCode) t1
+				group by t1.baeminCategoryName
+				order by w_total_amt_avg desc) g1) T2
+on T1.baeminCategoryName = T2.baeminCategoryName
+where T2.baeminCategoryName is not null
+;

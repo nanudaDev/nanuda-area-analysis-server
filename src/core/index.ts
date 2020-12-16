@@ -7,3 +7,4 @@ export * from './interceptors';
 export * from './base.service';
 export * from './guards';
 export * from './utils';
+export * from '../shared';
