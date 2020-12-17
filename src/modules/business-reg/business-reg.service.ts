@@ -65,12 +65,17 @@ export class BusinessRegService extends BaseService {
       .getRepository(KbDeliveryPrep)
       .createQueryBuilder('kbDeliveryPrep')
       .CustomInnerJoinAndSelect(['kbCategoryInfo', 'bdongInfo'])
-      .where('kbDeliveryPrep.yymm > 2007')
+      .where('kbDeliveryPrep.yymm > 2008')
       .andWhere('kbDeliveryPrep.admiCd LIKE :seoulCode', { seoulCode: '11%' })
       .AndWhereLike(
         'kbDeliveryPrep',
         'mediumCategoryCd',
         businessRegListDto.mediumCategoryCd,
+      )
+      .AndWhereLike(
+        'kbDeliveryPrep',
+        'sSmallCategoryCd',
+        businessRegListDto.smallCategoryCd,
       )
       .andWhere(
         `kbCategoryInfo.baeminCategoryName NOT IN ('패스트푸드', '카페/디저트')`,
