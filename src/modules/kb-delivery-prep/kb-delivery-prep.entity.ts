@@ -49,6 +49,12 @@ export class KbDeliveryPrep extends BaseEntity<KbDeliveryPrep> {
 
   @Column({
     type: 'bigint',
+    name: 'w_total_amt',
+  })
+  wTotalAmt: number;
+
+  @Column({
+    type: 'bigint',
     name: 'total_amt',
   })
   totalAmt: number;
@@ -64,6 +70,12 @@ export class KbDeliveryPrep extends BaseEntity<KbDeliveryPrep> {
     name: 'store_cnt',
   })
   storeCnt?: number;
+
+  @Column({
+    type: 'bigint',
+    name: 'p_store_cnt',
+  })
+  pStoreCnt?: number;
 
   movingPopulationCount?: number;
 

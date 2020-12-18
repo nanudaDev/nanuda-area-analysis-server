@@ -77,15 +77,20 @@ export class BusinessRegService extends BaseService {
         'sSmallCategoryCd',
         businessRegListDto.smallCategoryCd,
       )
+      .AndWhereEqual(
+        'kbCategoryInfo',
+        'baeminCategoryName',
+        businessRegListDto.baeminCategoryName,
+      )
       .andWhere(
         `kbCategoryInfo.baeminCategoryName NOT IN ('패스트푸드', '카페/디저트')`,
       )
       .andWhere(
         `kbCategoryInfo.mediumCategoryName NOT IN ('패스트푸드', '커피/음료')`,
       )
-      .orderBy('kbDeliveryPrep.totalAmt', ORDER_BY_VALUE.DESC)
+      .orderBy('kbDeliveryPrep.wTotalAmt', ORDER_BY_VALUE.DESC)
       .addOrderBy('kbDeliveryPrep.totalCnt', ORDER_BY_VALUE.DESC)
-      .addOrderBy('kbDeliveryPrep.storeCnt', ORDER_BY_VALUE.ASC)
+      .addOrderBy('kbDeliveryPrep.pStoreCnt', ORDER_BY_VALUE.ASC)
       .groupBy('kbDeliveryPrep.admiCd')
       .limit(20)
       .getRawMany();

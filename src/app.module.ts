@@ -38,6 +38,7 @@ import { DeliverySpace } from './modules/nanuda-company-entities/nanuda-delivery
       supportBigNumbers: false,
       entities: [Company, CompanyDistrict, DeliverySpace],
       synchronize: false,
+      connectTimeout: 20000,
     }),
     AnalysisTabModule,
     BaeminCategoryModule,
