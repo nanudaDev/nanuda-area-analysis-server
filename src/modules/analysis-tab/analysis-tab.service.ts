@@ -563,9 +563,18 @@ where T2.baeminCategoryName is not null;`);
               group by hdongCode) A
       ;
       `);
-
+    let recommendationMessage =
+      '주거인구수가 서울 동별 평균보다 높습니다. 배달하기 적합한 공간입니다.';
+    if (resCount[0].residentialPopulationCount < 30000) {
+      recommendationMessage =
+        '주거인구수가 서울 동별 평균보다 낮습니다. 배달하기 적합한 공간으로 볼 수 없습니다.';
+    } else if (resCount[0].residentialPopulationCount > 70000) {
+      recommendationMessage =
+        '주거인구수가 서울 동별 평균보다 현격히 높습니다. 배달하기 매우 적합한 공간입니다.';
+    }
     return {
       residentialPopulationCount: resCount[0].residentialPopulationCount,
+      recommendationMessage: recommendationMessage,
     };
   }
 
