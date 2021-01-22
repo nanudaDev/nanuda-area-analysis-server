@@ -266,8 +266,8 @@ from (select t1.baeminCategoryName,
               genderRatio[0].bz_cnt_per * 100,
             ],
             backgroundColor: [
-              'rgb(23,162,184)',
-              'rgb(232,93,71)',
+              'rgb(255, 122, 0)',
+              'rgb(213,213,213)',
               'rgb(100,100,100)',
             ],
           },
@@ -285,8 +285,8 @@ from (select t1.baeminCategoryName,
               genderRatio[0].bz_amt_per * 100,
             ],
             backgroundColor: [
-              'rgb(23,162,184)',
-              'rgb(232,93,71)',
+              'rgb(255, 122, 0)',
+              'rgb(213,213,213)',
               'rgb(100,100,100)',
             ],
           },
@@ -336,9 +336,9 @@ limit 1
       ];
       datas.map(data => {
         if (data === Math.max(...datas)) {
-          backgroundColor.push('rgb(23,162,184)');
+          backgroundColor.push('rgb(255, 122, 0)');
         } else {
-          backgroundColor.push('rgb(232,93,71)');
+          backgroundColor.push('rgb(213, 213, 213)');
         }
       });
 
@@ -363,9 +363,9 @@ limit 1
       const revBackgroundColor = [];
       revDatas.map(data => {
         if (data === Math.max(...revDatas)) {
-          revBackgroundColor.push('rgb(23,162,184)');
+          revBackgroundColor.push('rgb(255, 122, 0)');
         } else {
-          revBackgroundColor.push('rgb(232,93,71)');
+          revBackgroundColor.push('rgb(213,213,213)');
         }
       });
       const revenueData = {
@@ -414,9 +414,9 @@ from (select B.baeminCategoryName, B.s_small_category_nm, A.*
       const backgroundColor = [];
       datas.map(data => {
         if (data === Math.max(...datas)) {
-          backgroundColor.push('rgb(23,162,184)');
+          backgroundColor.push('rgb(255, 122, 0)');
         } else {
-          backgroundColor.push('rgb(232,93,71)');
+          backgroundColor.push('rgb(213, 213, 213)');
         }
       });
       const countData = {
@@ -439,9 +439,9 @@ from (select B.baeminCategoryName, B.s_small_category_nm, A.*
       ];
       revDatas.map(data => {
         if (data === Math.max(...revDatas)) {
-          revBackgroundColor.push('rgb(23,162,184)');
+          revBackgroundColor.push('rgb(255, 122, 0)');
         } else {
-          revBackgroundColor.push('rgb(232,93,71)');
+          revBackgroundColor.push('rgb(213,213,213)');
         }
       });
       const revenueData = {
@@ -608,9 +608,9 @@ from (SELECT hdongCode, avg(male) AS male, avg(female) AS female
     const backgroundColor = [];
     datas.map(data => {
       if (data === Math.max(...datas)) {
-        backgroundColor.push('rgb(23, 162, 184)');
+        backgroundColor.push('rgb(255, 122, 0)');
       } else {
-        backgroundColor.push('rgb(232, 93, 71)');
+        backgroundColor.push('rgb(213,213,213)');
       }
     });
     const genderData = {
@@ -659,9 +659,9 @@ from (SELECT hdongCode, avg(A10) AS A10, avg(A20) AS A20, avg(A30) AS A30, avg(A
     const backgroundColor = [];
     datas.map(data => {
       if (data === Math.max(...datas)) {
-        backgroundColor.push('rgb(23, 162, 184)');
+        backgroundColor.push('rgb(255, 122, 0)');
       } else {
-        backgroundColor.push('rgb(232, 93, 71)');
+        backgroundColor.push('rgb(213, 213, 213)');
       }
     });
     const ageGroupData = {
@@ -710,9 +710,9 @@ where hdongCode in (select hdongCode
     ];
     datas.map(data => {
       if (data === Math.max(...datas)) {
-        backgroundColor.push('rgb(23, 162, 184)');
+        backgroundColor.push('rgb(255, 122, 0)');
       } else {
-        backgroundColor.push('rgb(232, 93, 71)');
+        backgroundColor.push('rgb(213, 213, 213)');
       }
     });
     const residentialData = {
@@ -833,9 +833,9 @@ from (SELECT hdongCode, avg(A10) AS A10, avg(A20) AS A20, avg(A30) AS A30, avg(A
     );
     datas.map(data => {
       if (data === Math.max(...datas)) {
-        backgroundColor.push('rgb(23, 162, 184)');
+        backgroundColor.push('rgb(255, 122, 0)');
       } else {
-        backgroundColor.push('rgb(232, 93, 71)');
+        backgroundColor.push('rgb(213, 213, 213)');
       }
     });
     const ageData = {
