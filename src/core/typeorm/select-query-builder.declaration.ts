@@ -94,7 +94,7 @@ declare module 'typeorm/query-builder/SelectQueryBuilder' {
       alias: string,
       property: string,
       value: any,
-      excludedRequestDto: any,
+      excludedRequestDto?: any,
     ): SelectQueryBuilder<Entity>;
 
     /**
@@ -440,7 +440,7 @@ SelectQueryBuilder.prototype.AndWhereEqual = function<Entity>(
   alias: string,
   property: string,
   value: any,
-  excludedRequestDto: any,
+  excludedRequestDto?: any,
 ): SelectQueryBuilder<Entity> {
   if (value !== undefined) {
     this.andWhere(

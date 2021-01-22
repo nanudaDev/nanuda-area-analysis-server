@@ -19,11 +19,12 @@ export class TypeOrmConfigService implements TypeOrmOptionsFactory {
       username: env.ANALYSIS_DB_USERNAME,
       password: env.ANALYSIS_DB_PASSWORD,
       database: env.ANALYSIS_DB_DATABASE,
-      keepConnectionAlive: true,
-      bigNumberStrings: true,
-      supportBigNumbers: true,
+      keepConnectionAlive: false,
+      // bigNumberStrings: true,
+      // supportBigNumbers: true,
       entities: getMetadataArgsStorage().tables.map(tbl => tbl.target),
       synchronize: false,
+      connectTimeout: 20000,
     };
   }
 }

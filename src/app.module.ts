@@ -9,11 +9,15 @@ import { LoggingInterceptor } from './core';
 import {
   AnalysisTabModule,
   BaeminCategoryModule,
+  BusinessRegModule,
   CodeBdongModule,
   CodeHdongModule,
   KbCategoryInfoModule,
   KrLicenseCodeModule,
 } from './modules';
+import { CompanyDistrict } from './modules/nanuda-company-entities/nanuda-company-district.entity';
+import { Company } from './modules/nanuda-company-entities/nanuda-company.entity';
+import { DeliverySpace } from './modules/nanuda-company-entities/nanuda-delivery-space.entity';
 
 @Module({
   imports: [
@@ -32,11 +36,13 @@ import {
       //   keepConnectionAlive: true,
       bigNumberStrings: false,
       supportBigNumbers: false,
-      entities: [],
+      entities: [Company, CompanyDistrict, DeliverySpace],
       synchronize: false,
+      connectTimeout: 20000,
     }),
     AnalysisTabModule,
     BaeminCategoryModule,
+    BusinessRegModule,
     CodeBdongModule,
     CodeHdongModule,
     KbCategoryInfoModule,
