@@ -48,6 +48,42 @@ export class KbDeliveryPrep extends BaseEntity<KbDeliveryPrep> {
   sSmallCategoryCd: string;
 
   @Column({
+    name: 'm_cnt_per',
+    type: 'double',
+  })
+  mCntPer: number;
+
+  @Column({
+    name: 'fm_cnt_per',
+    type: 'double',
+  })
+  fmCntPer: number;
+
+  @Column({
+    name: 'm_amt_per',
+    type: 'double',
+  })
+  mAmtPer: number;
+
+  @Column({
+    name: 'fm_amt_per',
+    type: 'double',
+  })
+  fmAmtPer: number;
+
+  @Column({
+    type: 'bigint',
+    name: 'w_total_amt',
+  })
+  wTotalAmt: number;
+
+  @Column({
+    type: 'bigint',
+    name: 'w_total_cnt',
+  })
+  wTotalCnt: number;
+
+  @Column({
     type: 'bigint',
     name: 'total_amt',
   })
@@ -64,6 +100,12 @@ export class KbDeliveryPrep extends BaseEntity<KbDeliveryPrep> {
     name: 'store_cnt',
   })
   storeCnt?: number;
+
+  @Column({
+    type: 'bigint',
+    name: 'p_store_cnt',
+  })
+  pStoreCnt?: number;
 
   movingPopulationCount?: number;
 

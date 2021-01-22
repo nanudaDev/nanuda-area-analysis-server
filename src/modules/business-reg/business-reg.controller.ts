@@ -43,4 +43,12 @@ export class BusinessRegController extends BaseController {
   async getBestLocations(@Query() businessRegListDto: BusinessRegListDto) {
     return await this.businessRegService.getBestLocations(businessRegListDto);
   }
+
+  /**
+   * 서울시 전체 업종 별 집계 쿼리
+   */
+  @Get('/location-analysis/food-category-ranking')
+  async foodCategoryRanking() {
+    return await this.businessRegService.foodCategoryRankingSummary();
+  }
 }
